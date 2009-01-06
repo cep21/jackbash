@@ -1,0 +1,3 @@
+#!/bin/sh
+# echo every file that is changed between git-svn and HEAD
+git diff remotes/git-svn... --name-status | grep -oP '(?<=^[MA]\t).*'

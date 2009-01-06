@@ -1,0 +1,30 @@
+#!/usr/bin/perl
+
+use strict;
+use LWP::UserAgent;
+use Time::HiRes qw/gettimeofday/;
+
+my $count = shift || 10;
+my $url = shift || "http://www.facebook.com/favicon.ico";
+
+my $ua = LWP::UserAgent->new;
+$ua->agent("fbloadtest/0.1 ");
+
+# Create a request
+my $req = HTTP::Request->new(GET => $url);
+
+printf("Testing %d fetches of %s\n", $count, $url);
+my $t0 = gettimeofday();
+
+for my $i (1..$count) {
+  # Pass request to the user agent and get a response back
+  my $res = $ua->request($req);
+}
+
+my $t1 = gettimeofday();
+
+
+printf("It took %.3fs to grab %d urls @ %.3fms per request\n",
+       $t1-$t0, $count, ($t1-$t0)/$count*1000);
+
+
