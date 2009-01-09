@@ -102,7 +102,7 @@ fi;
 
 #GNU vs BSD top command line arguments
 # Delay updates by 10 sec and sort by CPU
-(man top | grep Linux> /dev/null)
+(man top 2>&1 | grep Linux> /dev/null)
 if [ $? -eq 0 ]; then
   export TOP_OPTIONS='-c -d10'
 else
