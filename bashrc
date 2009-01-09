@@ -65,7 +65,10 @@ export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
 
 # export the first java home we find
-JAVA_IN_PATH=`ls -la \`which java\` | sed s/.*-\>[^/]*// | sed s#/bin/java##`
+(which java &> /dev/null)
+if [ $? -eq 0 ]; then
+  JAVA_IN_PATH=`ls -la \`which java\` | sed s/.*-\>[^/]*// | sed s#/bin/java##`
+fi;
 for x in [ $JAVA_IN_PATH ]; do
   if [ -d $x ]; then
     export JAVA_HOME=$x
