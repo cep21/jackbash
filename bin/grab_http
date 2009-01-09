@@ -5,6 +5,7 @@ use LWP::UserAgent;
 use Time::HiRes qw/gettimeofday/;
 
 my $count = shift || 10;
+# Default to a generic url to test
 my $url = shift || "http://www.facebook.com/favicon.ico";
 
 my $ua = LWP::UserAgent->new;

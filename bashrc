@@ -23,7 +23,12 @@
 
 
 # Source global definitions
-source /etc/bashrc
+GLOBAL_BASH_DEF='/etc/bashrc'
+if [ -f $GLOBAL_BASH_DEF ]
+then
+  source $GLOBAL_BASH_DEF
+fi;
+
 
 # Create a scrubed hostname
 export HOSTNAME_SCRUB=`hostname | sed -e s/[^a-z0-9_]//g`
