@@ -1,4 +1,6 @@
 #!/bin/bash
+# Lists all your current screen sessions and allows you to
+#  pick which one you want to join
 
 
 # filters the screen -ls output to show the sesssions
