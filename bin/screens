@@ -15,7 +15,6 @@ fi
 echo ''
 echo "  CURRENT SESSIONS"
 echo "  ------------------------"
-#screen -ls | sed -ne 's/[[:space:]]//' -ne 's/\((Attached)\|(Detached)\)// p' | cat -n
 echo "$sessions" | cat -n
 echo "  ------------------------"
 echo ''
@@ -33,7 +32,7 @@ fi
 
 #attach to specified session
 linenum=0
-name=`screen -ls | sed -ne 's/[[:space:]]//' -ne 's/\((Attached)\|(Detached)\)// p' |
+name=`screen -ls | sed -n $SED_EXT 's/(\(Attached\)|\(Detached\))// p' | sed $SED_EXT 's/[[:space:]]//' |
 while read line
 do
  let "linenum += 1"
