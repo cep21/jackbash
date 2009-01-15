@@ -4,7 +4,7 @@
 # filters the screen -ls output to show the sesssions
 
 sessions=`screen -ls | sed -n $SED_EXT 's/(\(Attached\)|\(Detached\))// p'`
-res=`echo "$sessions" | wc -w`
+res=`echo "$sessions" | wc -w | sed 's/^[[:space:]]*//'`
 
 if [[ "$res" == "0" ]]
 then
