@@ -145,6 +145,7 @@ function catw(){
 complete -c default catw
 # Two standard functions to change $PATH
 add_path() { export PATH="$PATH:$1"; }
+add_pre_path() { export PATH="$1:$PATH"; }
 # Misc utilities:
 
 # Repeat a command N times.  You can do something like
