@@ -1,8 +1,8 @@
 # .bashrc
 # Welcome to the most awesome bash startup script you'll ever see.
 #   It tries to be BSD and GNU compatable, which means it works on
-#   your MAC and sandbox server.  It also tries to be safe to add
-#   as a source to your .bashrc and .bash_profile.  I usually just
+#   your MAC, cygwin, and sandbox server.  It also tries to be safe 
+#   to add as a source to your .bashrc and .bash_profile.  I usually 
 #   source this file from both.
 #   It is split into three files
 #   (1) Generic bash stuff
@@ -215,7 +215,7 @@ fi;
 
 # remove duplicate path entries
 #  There seem to be some bugs in this.  Inspect more later
-export PATH=$(echo $PATH | awk -F: '
-    { for (i = 1; i <= NF; i++) arr[$i]; }
-    END { for (i in arr) printf "%s:" , i; printf "\n"; } ')
+#export PATH=$(echo $PATH | awk -F: '
+#    { for (i = 1; i <= NF; i++) arr[$i]; }
+#    END { for (i in arr) printf "%s:" , i; printf "\n"; } ')
 
