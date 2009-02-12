@@ -131,7 +131,7 @@ alias top='top $TOP_OPTIONS'
 #autocomplete ssh commands with the hostname
 complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
 # awesome!  CD AND LA. I never use 'cd' anymore...
-function cl(){ cd $@ && la; }
+function cl(){ cd "$@" && la; }
 # cat the contents of a command
 function catw(){
 # TODO: This doesn't work.  Why?
