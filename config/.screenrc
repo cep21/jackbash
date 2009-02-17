@@ -1,0 +1,25 @@
+escape ^]]                             # set escape to ctrl-].  Emacs friendly
+
+# default startup shell
+shell                 bash
+
+# The shelltitle is important. Otherwise all new windows will display a default 
+#  title of "bash" (usually) and clutter up your elite new status bar. You can
+#  rename a window using ctrl-], A.
+shelltitle ''
+
+vbell off                               # disable visual bell
+termcapinfo xterm-color ti@:te@         # Allow terminal scrolling
+defscrollback 10000                     # large scroll back
+startup_message off                     # Turn off the splash screen
+
+# change the hardstatus settings to give an window list at the bottom of the
+# screen, with the time and date and with the current window highlighted 
+hardstatus alwayslastline
+# 'always' keeps the caption even if only one window is shown
+#caption always '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%<'
+hardstatus string '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%< %{= kG}%-=%H %D %d %M %Y %c:%s%{-}'
+
+# startup some programs in the appropriate windows
+#screen 2 program
+#screen 0
