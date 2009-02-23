@@ -1,0 +1,19 @@
+#!/usr/local/bin/ruby
+# Given as parameter a sorted file, it prints stats on which lines in the file
+#   are at given marks.  For example, it will tell you which line is in the
+#   middle, which line is the 10%-th, etc
+
+# Return the content of line #line# in #file#
+def getline(file, line) 
+  return IO.popen('head -n'+line.to_s+' '+file+' | tail -n1').gets
+end
+
+file = ARGV[0]
+size = IO.popen('wc -l ' + file).gets.to_i
+[['.1',0],[1,0],[10,0],[1,90],['.1',99]].each {|m|
+  (1..9).each{|f|
+    perc = m[1]+ f*m[0].to_f
+    puts perc.to_s+"% at "+getline(file, (perc*size/100).to_i);
+  }
+}
+
