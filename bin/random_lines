@@ -1,0 +1,59 @@
+#!/usr/local/bin/ruby
+usage = "
+Usage: random_lines [N [file]]
+Prints N random lines from file.  If file is ommitted or is -, then stdin is 
+used.  If N ends with %, then that percentage of random lines is printed.
+This script is optimized for very large inputs, where each line of input won't
+at once fit inside memory.
+".strip()
+
+# I found this function on the internets somewhere
+def fisher_yates_shuffle(a)
+    (a.size-1).downto(1) { |i|
+        j = rand(i+1)
+        a[i], a[j] = a[j], a[i] if i != j
+    }
+end
+
+if (ARGV.length >= 3)
+  puts usage
+  exit(1)
+end
+
+num_lines = (ARGV.length >= 1 ? ARGV[0] : '100%')
+filename  = (ARGV.length == 2 ? ARGV[1] : '-')
+if (num_lines.length <= 0) 
+  puts usage
+  exit(1)
+end
+temp_file = false
+if (filename == '-')
+  temp_file = File.new("/tmp/blarg"+rand(999999999).to_s, "w")
+  STDIN.each_byte {|f| temp_file.putc f}
+  filename = temp_file.path()
+  temp_file.close()
+end
+
+# Step 1: Assign each line an index in the file
+line_store       = Array.new
+count_lines_file = File.new(filename)
+prev_pos = 0
+count_lines_file.each{ |line|
+  line_store << prev_pos
+  prev_pos = count_lines_file.pos
+}
+fisher_yates_shuffle(line_store)
+
+# Step 2: Figure out how many lines to print
+num_lines = (num_lines.chop().to_f/100.0*line_store.length).ceil.to_i if num_lines[-1..-1]=='%'
+num_lines = [line_store.length, num_lines.to_i-1].min()
+
+# Step 3: print the smallest N numbers
+line_store[0..num_lines].each{ |store|
+  count_lines_file.seek(store)
+  puts count_lines_file.gets
+}
+
+# Step 4: Cleanup
+count_lines_file.close()
+File.delete(temp_file.path()) if temp_file
