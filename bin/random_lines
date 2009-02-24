@@ -1,4 +1,7 @@
 #!/usr/local/bin/ruby
+# If the file is REALLY large, it is sometimes better to use
+#   ruby -ne 'puts $_ if rand() < .1' < filename | random_lines 100
+# but then you don't get an exact number of random lines
 usage = "
 Usage: random_lines [N [file]]
 Prints N random lines from file.  If file is ommitted or is -, then stdin is 
@@ -8,11 +11,18 @@ at once fit inside memory.
 ".strip()
 
 # I found this function on the internets somewhere
-def fisher_yates_shuffle(a)
+#  modified it to be more efficient in the context of this program.  It calls
+#  oneach for each random element it selects, but returns early after count
+#  calls
+def fisher_yates_shuffle(a, count, &oneach)
     (a.size-1).downto(1) { |i|
         j = rand(i+1)
         a[i], a[j] = a[j], a[i] if i != j
+        yield(a[i])
+        count-=1
+        return if count==0
     }
+    yield(a[0])
 end
 
 if (ARGV.length >= 3)
@@ -28,12 +38,11 @@ if (num_lines.length <= 0)
 end
 temp_file = false
 if (filename == '-')
-  temp_file = File.new("/tmp/blarg"+rand(999999999).to_s, "w")
+  temp_file = File.new("/tmp/random_lines"+rand(999999999).to_s, "w")
   STDIN.each_byte {|f| temp_file.putc f}
   filename = temp_file.path()
   temp_file.close()
 end
-
 # Step 1: Assign each line an index in the file
 line_store       = Array.new
 count_lines_file = File.new(filename)
@@ -42,14 +51,13 @@ count_lines_file.each{ |line|
   line_store << prev_pos
   prev_pos = count_lines_file.pos
 }
-fisher_yates_shuffle(line_store)
 
 # Step 2: Figure out how many lines to print
 num_lines = (num_lines.chop().to_f/100.0*line_store.length).ceil.to_i if num_lines[-1..-1]=='%'
-num_lines = [line_store.length, num_lines.to_i-1].min()
+num_lines = [line_store.length, num_lines.to_i].min()
 
-# Step 3: print the smallest N numbers
-line_store[0..num_lines].each{ |store|
+# Step 3: Print the random lines
+fisher_yates_shuffle(line_store,num_lines){ |store|
   count_lines_file.seek(store)
   puts count_lines_file.gets
 }
