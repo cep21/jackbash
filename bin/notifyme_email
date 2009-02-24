@@ -1,0 +1,20 @@
+#!/bin/bash
+# A script to notify you when a command completes.
+#  Two usages.
+#   (1) notifyme_email ls -R /
+#   (2) echo "Hello bob"; notifyme_email
+if [ $# -eq "0" ]; then
+  echo "Trigger!"| mutt -s "Notification triggered!" $EMAIL 
+  exit
+fi
+file=`mktemp`
+args=$@
+$@ | tee $file
+#bash -ic $@ | tee $file
+if [ ${PIPESTATUS[0]} -eq "0" ]; then
+  res="success"
+else
+  res="Failure $?"
+fi
+mutt -s "Process result: $res $args" $EMAIL < $file
+rm -f $file
