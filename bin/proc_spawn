@@ -1,0 +1,38 @@
+#!/usr/local/bin/ruby_1.8.6
+usage = "
+Usage: proc_spawn atonce numtimes process
+Runs numtimes instances of process, with atonce running at one time.
+".strip()
+if (ARGV.length != 3)
+  puts usage
+  exit(1)
+end
+### This is lame.  So is our ruby config
+require '/usr/lib/ruby/1.8/thread'
+semaphore = Mutex.new
+@run_count = 0
+
+atonce    = ARGV[0].to_i
+@numtimes = ARGV[1].to_i
+process   = ARGV[2]
+def spawn_watcher(process, lock)
+  return Thread.new() {
+    while (true) do
+      should_exit = false
+      lock.synchronize{
+        should_exit = (@run_count >= @numtimes)
+        @run_count += 1
+      }
+      break if should_exit
+      system(process)
+    end
+  }
+end
+runners = Array.new
+atonce.times do |l|
+  runners << spawn_watcher(process,semaphore)
+end
+runners.each{ |t|
+ t.join
+}
+

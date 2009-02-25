@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby
 # If the file is REALLY large, it is sometimes better to use
-#   ruby -ne 'puts $_ if rand() < .1' < filename | random_lines 100
+#   ruby -ne 'puts $_ if rand() < .1' < filename 
 # but then you don't get an exact number of random lines
 usage = "
 Usage: random_lines [N [file]]
