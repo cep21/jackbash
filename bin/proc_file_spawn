@@ -1,0 +1,44 @@
+#!/usr/local/bin/ruby_1.8.6
+usage = "
+Usage: proc_file_spawn atonce input_dir output_dir process
+Runs process for each file of input_dir, with that file as stdin and redirects
+stdout from each process to a similarly named file in output_dir
+".strip()
+if (ARGV.length != 4)
+  puts usage
+  exit(1)
+end
+### This is lame.  So is our ruby config
+require '/usr/lib/ruby/1.8/thread'
+semaphore = Mutex.new
+@input_files = Array.new
+
+atonce     = ARGV[0].to_i
+input_dir  = ARGV[1]
+output_dir = ARGV[2]
+process    = ARGV[3]
+def spawn_watcher(process, lock, output_dir)
+  return Thread.new() {
+    while (true) do
+      next_file = nil
+      lock.synchronize{
+        next_file = @input_files.shift
+      }
+      break if next_file==nil
+      output_file = output_dir+"/"+File.basename(next_file)
+      system(process+" < "+next_file+" > " + output_file)
+    end
+  }
+end
+
+Dir.new(input_dir).each{ |file|
+  @input_files << file if file != '.' && file != '..' && !File.directory?(file)
+}
+runners = Array.new
+atonce.times do |l|
+  runners << spawn_watcher(process, semaphore, output_dir)
+end
+runners.each{ |t|
+ t.join
+}
+
