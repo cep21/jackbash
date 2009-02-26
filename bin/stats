@@ -1,0 +1,241 @@
+#!/usr/bin/perl
+
+# script that parses numbers from stdin and calculates statistics for them.
+# @author doug
+
+use strict;
+
+use File::Basename;
+use Getopt::Long;
+
+sub usage {
+ my $prog = basename($0);
+ die <<EOT;
+Usage: $prog [switches]
+
+process stdin or files on argv and look for numbers at the start
+of lines.  process those and generate stats on their distribution
+and frequency.  if you ctrl-c the process, it will print out the
+stats it has so far.
+
+--help          this usage message
+
+--col=N         use the Nth appearance of a number in stdin instead of
+                the default first column.
+
+--regex='X'     a custom regex to extract your number from the input.
+                default is '(\d+(?:\.\d+)?)'.
+
+--issorted      if you guarantee that you've already sorted the samples
+                in ascending order (sort -n, etc), skips the sorting
+                step when calculating percentiles and frequencies, saves
+                memory.
+
+--max=N         stop after collecting N samples.
+
+--kb		Show everything but the count in KB, MB, GB, or TB.
+--mb
+--gb
+--tb
+
+EOT
+}
+
+our ($help, $col, $regex, $do_freq_calc, $is_sorted, $max_samples, $freq_window, $floats_seen,
+     $kb_step);
+
+$kb_step = 1;
+
+GetOptions('help' => \$help,
+           'col=i' => \$col,
+           'regex=s' => \$regex,
+           'sorted' => \$is_sorted,
+           'max=s' => \$max_samples,
+           'freq' => \$do_freq_calc,
+           'window=i' => \$freq_window,
+           'kb' => sub { $kb_step = 2**10 },
+           'mb' => sub { $kb_step = 2**20 },
+           'gb' => sub { $kb_step = 2**30 },
+           'tb' => sub { $kb_step = 2**40 }
+) or usage();
+
+usage() if $help;
+
+$col ||= 1;
+$regex ||= '(\d+(?:\.\d+)?)';
+$is_sorted ||= 0;
+$max_samples ||= 0;
+$freq_window ||= 20;
+
+our %multipliers = (
+  k => 1_000,
+  m => 1_000_000,
+  b => 1_000_000_000,
+);
+
+if (my ($num, $multiplier) = $max_samples =~ /^(\d+)(\w)/) {
+  my $value = $multipliers{$multiplier};
+  if ($value) {
+    $max_samples = $num * $value;
+  }
+}
+
+our $c_regex = qr/$regex/;
+our @samples;
+our %freq;
+
+$SIG{'INT'} = sub { my $stats = calculate_stats(\@samples); print_report($stats); exit; };
+
+my $sample_count = 0;
+while (<>) {
+  chomp;
+  last if $max_samples > 0 && $sample_count >= $max_samples;
+
+  my @nums = $_ =~ m/$c_regex/g;
+  my $val = $nums[$col-1];
+
+  # apply scaling factor (defaults to 1)
+  $val /= $kb_step;
+
+  if ($val =~ /\d+/) {
+    $sample_count++;
+
+    if ($do_freq_calc) {
+      $freq{$val}++;
+    } else {
+      # has to be a number
+      if ($val =~ /^\d+\.\d+$/) {
+        $floats_seen = 1;
+      }
+      push @samples, $val
+    }
+  }
+}
+
+if ($do_freq_calc) {
+  print_frequency_report(\%freq, $sample_count);
+} else {
+  our $stats = calculate_stats(\@samples);
+  print_report($stats);
+}
+
+exit;
+
+sub print_frequency_report {
+  my $freq = shift;
+  my $count = shift;
+  my $width = 50;
+
+  my @sorted_keys = sort {$freq->{$b} <=> $freq->{$a} } keys %$freq;
+  print "\nfrequency of top $freq_window most common values\n\n";
+
+  my $norm_max = $freq->{$sorted_keys[0]};
+  my $max_len = length $norm_max;
+
+  my $i = 0;
+  for my $ranked_value (@sorted_keys) {
+    my $scaled_value = ($freq->{$ranked_value} / $norm_max * $width);
+    my $val_format;
+    if ($floats_seen) {
+      $val_format = "%10s";
+    } else {
+      $val_format = "%10s";
+    }
+    printf "%3d: $val_format  %-${width}s  (%${max_len}d @ %.1f%%)\n",
+           $i+1, $ranked_value, '*' x $scaled_value, $freq->{$ranked_value},
+           $freq->{$ranked_value} / $count * 100;
+    last if $i++ > $freq_window;
+  }
+
+}
+
+sub print_report {
+  my $stats = shift;
+
+  my $val_format = "%d";
+  if ($floats_seen) {
+    $val_format = "%.3f";
+  }
+
+  # print simple stats
+
+  printf "count:    %d
+min:      $val_format
+max:      $val_format
+avg:      %.3f
+median:   $val_format
+sum:      $val_format
+stddev:   %.3f
+variance: %.3f
+
+", $stats->{'count'}, $stats->{'min'}, $stats->{'max'},
+   $stats->{'avg'}, $stats->{'median'}, $stats->{'sum'},
+   $stats->{'stddev'}, $stats->{'variance'};
+
+  # print percentile table
+
+  print "percentiles:\n";
+  for my $percentile (@{ $stats->{percentiles} }) {
+    my $value = $stats->{histogram}->{$percentile};
+    printf "%6s%%: $val_format%s\n", $percentile, $value,
+                              ($value == $stats->{max} ? ' (max)' : '');
+  }
+  print "\n";
+}
+
+sub calculate_stats {
+  my $samples = shift;
+  return unless $samples && ref $samples eq 'ARRAY';
+
+  my $sorted_samples;
+  my $count = scalar @$samples;
+  my $sum = 0;
+  my $sumsq = 0;
+
+  for my $sample (@$samples) {
+    $sum += $sample;
+    $sumsq += $sample ** 2;
+  }
+
+  if ($is_sorted) {
+    $sorted_samples = $samples;
+  } else {
+    $sorted_samples = [ sort { $a <=> $b } @$samples ];
+  }
+
+  my $avg = $sum / $count * 1.0;
+  my $variance = $sumsq / $count - ($avg ** 2);
+  my $stddev = sqrt($variance);
+  my $median = $sorted_samples->[$count/2];
+
+  my $min = $sorted_samples->[0];
+
+  my $max = $sorted_samples->[$count-1];
+
+  my $histogram = {};
+  my $percentiles = [
+    qw/1 2 3 4 5 10 15 20 25 30 35 40 45 50 55 60 65 70 75
+       80 85 90 95 96 97 98 99 99.5 99.9 99.95 99.99 99.999/
+  ];
+
+  for my $percentile (@$percentiles) {
+    my $i = int(($percentile / 100) * $count);
+    my $sample_value = $sorted_samples->[$i];;
+    $histogram->{$percentile} = $sample_value;
+  }
+
+  my $stats = {
+    'count'       => $count,
+    'sum'         => $sum,
+    'min'         => $min,
+    'max'         => $max,
+    'avg'         => $avg,
+    'median'      => $median,
+    'stddev'      => $stddev,
+    'variance'    => $variance,
+    'histogram'   => $histogram,
+    'percentiles' => $percentiles,
+  };
+
+  return $stats;
+}
