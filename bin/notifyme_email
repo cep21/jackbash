@@ -4,7 +4,7 @@
 #   (1) notifyme_email ls -R /
 #   (2) echo "Hello bob"; notifyme_email
 if [ $# -eq "0" ]; then
-  echo "Trigger!"| mutt -s "Notification triggered!" $EMAIL 
+  echo "Trigger!"| mutt -s "Notification triggered on `hostname` by `whoami`!" $EMAIL
   exit
 fi
 file=`mktemp`

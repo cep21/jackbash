@@ -1,0 +1,47 @@
+#!/usr/local/bin/ruby_1.8.6
+# clear_buffer used for extreamly large input sizes
+usage = "
+Usage: split_group prefix eval
+Splits stdin into multiple files stored in the current working directory.
+Each file is prefixed by $prefix and the suffix is the return statement from
+executing the ruby statement $eval on that input line.  If eval returns
+=== false, then that line is not put in any file.
+".strip()
+
+def clear_buffer(buffer, prefix)
+  buffer.each{ |b|
+    suffix = b[0]
+    f = File.open(prefix+"_"+suffix, 'a') do |f|
+      b[1].each{ |l|
+        f.puts l
+      }
+    end
+  }
+  buffer.clear
+end
+
+if (ARGV.length != 2)
+  puts usage
+  exit(1)
+end
+prefix    = ARGV[0]
+eval_stmt = ARGV[1]
+
+buffer = {}
+l = nil
+b = binding()
+ctr = 0
+STDIN.each{ |l|
+  l.chomp!
+  x = eval(eval_stmt, b).to_s
+  continue if x === false
+  buffer[x] = Array.new if buffer[x]==nil
+  buffer[x]<< l
+  ctr+=1
+  if (ctr >= 100000) 
+    clear_buffer(buffer,prefix)
+    ctr = 0
+  end
+}
+
+clear_buffer(buffer, prefix)

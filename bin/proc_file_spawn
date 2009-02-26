@@ -1,23 +1,30 @@
 #!/usr/local/bin/ruby_1.8.6
+
+#### The directory/file names are not shell escaped and this is most likley
+# bad.  Know what you're doing before you execute this.
 usage = "
-Usage: proc_file_spawn atonce input_dir output_dir process
+Usage: proc_file_spawn atonce input_dir output_dir move_dir process
 Runs process for each file of input_dir, with that file as stdin and redirects
-stdout from each process to a similarly named file in output_dir
+stdout from each process to a similarly named file in output_dir.  Then, each
+input file is moved to move_dir once process is finished.  This lets you resume
+the script in the middle of killing it.
 ".strip()
-if (ARGV.length != 4)
+if (ARGV.length != 5)
   puts usage
   exit(1)
 end
 ### This is lame.  So is our ruby config
 require '/usr/lib/ruby/1.8/thread'
+require '/usr/lib/ruby/1.8/ftools'
 semaphore = Mutex.new
 @input_files = Array.new
 
 atonce     = ARGV[0].to_i
 input_dir  = ARGV[1]
 output_dir = ARGV[2]
-process    = ARGV[3]
-def spawn_watcher(process, lock, output_dir)
+move_dir   = ARGV[3]
+process    = ARGV[4]
+def spawn_watcher(process, lock, output_dir, move_dir)
   return Thread.new() {
     while (true) do
       next_file = nil
@@ -26,17 +33,18 @@ def spawn_watcher(process, lock, output_dir)
       }
       break if next_file==nil
       output_file = output_dir+"/"+File.basename(next_file)
-      system(process+" < "+next_file+" > " + output_file)
+      system(process+" < "+next_file+" > " + output_file+".out")
+      File.move(next_file, move_dir)
     end
   }
 end
 
 Dir.new(input_dir).each{ |file|
-  @input_files << file if file != '.' && file != '..' && !File.directory?(file)
+  @input_files << File.expand_path(file, input_dir) if file != '.' && file != '..' && !File.directory?(file)
 }
 runners = Array.new
 atonce.times do |l|
-  runners << spawn_watcher(process, semaphore, output_dir)
+  runners << spawn_watcher(process, semaphore, output_dir, move_dir)
 end
 runners.each{ |t|
  t.join
