@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby_1.8.6
+#!/usr/local/bin/ruby
 
 #### The directory/file names are not shell escaped and this is most likley
 # bad.  Know what you're doing before you execute this.

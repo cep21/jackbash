@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby_1.8.6
+#!/usr/local/bin/ruby
 usage = "
 Usage: proc_spawn atonce numtimes process
 Runs numtimes instances of process, with atonce running at one time.
