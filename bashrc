@@ -124,6 +124,7 @@ alias ll='ls -lh $LS_COLOR'
 alias ssh='ssh -A'
 alias g='git'
 alias top='top $TOP_OPTIONS'
+alias rcopy='rsync -az --stats --progress --delete'
 
 #### RANDOM FUNCTIONS #####
 #autocomplete ant commands... but it doesn't work!
