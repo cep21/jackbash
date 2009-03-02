@@ -1,0 +1,84 @@
+#!/usr/local/bin/ruby
+
+#### The directory/file names are not shell escaped and this is most likley
+# bad.  Know what you're doing before you execute this.
+usage = "
+Usage: proc_hyper_exec atonce machineatonce input_dir output_dir move_dir process
+Takes a list of servers one line at a time from stdin.  Then, for each file inside
+input_dir runs:
+  ssh server 'process' < input_file > output_file; mv input_file move_dir
+
+It runs at most atonce at a single time, with machineatonce on the same machine
+at the same time.  The basic use for this script is that you want to run a data
+intensive process on multiple machines, where it's ok if a single machine runs the
+same process at the same time (maybe the process blocks on network or DB IO somewhere).
+
+The first step is to split the data into multiple files.  This step allows you to kill
+and restart proc_hyper_exec and not have to recompute all the data.
+".strip()
+if (ARGV.length != 6)
+  puts usage
+  exit(1)
+end
+### This is lame.  So is our ruby config
+require '/usr/lib/ruby/1.8/thread'
+require '/usr/lib/ruby/1.8/ftools'
+semaphore = Mutex.new
+@input_files = Array.new
+@serverlist  = Array.new
+STDIN.each{ |server|
+  @serverlist << server.chomp!
+}
+
+atonce     = ARGV[0].to_i
+m_atonce   = ARGV[1].to_i
+input_dir  = ARGV[2]
+output_dir = ARGV[3]
+move_dir   = ARGV[4]
+process    = ARGV[5]
+
+temp = Array.new
+1.upto(m_atonce){ |i|
+  @serverlist.each{ |server|
+    temp << server
+  }
+}
+@serverlist = temp
+
+def spawn_watcher(process, lock, output_dir, move_dir)
+  return Thread.new() {
+    used_server = nil
+    while (true) do
+      next_file = nil
+      lock.synchronize{
+        @serverlist << used_server if used_server!= nil
+        next_file   = @input_files.shift
+        used_server = @serverlist.shift
+      }
+      break if next_file==nil
+      if used_server == nil
+        puts 'sleeping!'
+        sleep(10)
+        next
+      end
+      output_file = output_dir+"/"+File.basename(next_file)
+      # OMG seriously escape this better dude
+      x = 'ssh ' + used_server + ' "' + process+'" < '+next_file+" > " + output_file+".out"
+      system(x)
+      File.move(next_file, move_dir)
+      puts 'Finished on ' + next_file + ' for ' + used_server
+    end
+  }
+end
+
+Dir.new(input_dir).each{ |file|
+  @input_files << File.expand_path(file, input_dir) if file != '.' && file != '..' && !File.directory?(file)
+}
+runners = Array.new
+atonce.times do |l|
+  runners << spawn_watcher(process, semaphore, output_dir, move_dir)
+end
+runners.each{ |t|
+ t.join
+}
+

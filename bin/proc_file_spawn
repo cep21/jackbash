@@ -7,7 +7,8 @@ Usage: proc_file_spawn atonce input_dir output_dir move_dir process
 Runs process for each file of input_dir, with that file as stdin and redirects
 stdout from each process to a similarly named file in output_dir.  Then, each
 input file is moved to move_dir once process is finished.  This lets you resume
-the script in the middle of killing it.
+the script in the middle of killing it.  Sample execution:
+  proc_file_spawn 10 todo out done './script.sh'
 ".strip()
 if (ARGV.length != 5)
   puts usage
