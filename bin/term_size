@@ -1,0 +1,28 @@
+#!/usr/local/bin/ruby
+usage = "
+Usage: term_size
+Prints two tab separated values.  The current terminal row and col count
+".strip()
+
+if (ARGV.length >= 1)
+  puts usage
+  exit(1)
+end
+
+res          = `stty -a`
+dimentions   = [0,0]
+descriptions = [['rows','row'],['cols','columns']]
+
+res.split("\n").each{|line|
+  line.split(";").each{ |part|
+    part.strip!
+    a = part.split(/[ =]/).collect{|l|l.strip}
+    next if a.length != 2
+    a.each_with_index{|word,index|
+      descriptions.each_with_index{|dim_arr, index_dim|
+        dimentions[index_dim] = a[index+1%2] if dim_arr.index(word)
+      }
+    }
+  }
+}
+puts dimentions.join("\t")
