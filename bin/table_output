@@ -1,0 +1,41 @@
+#!/usr/local/bin/ruby
+usage = "
+Usage: table_output 
+Takes stdin and prints it in a pretty to read for humans tabular output
+".strip
+
+if (ARGV.length >= 1)
+  puts usage
+  exit(1)
+end
+
+lines    = Array.new
+matrix   = Array.new
+max_lens = Array.new
+STDIN.each {|l|
+  lines << l
+  l.strip!
+  parts = l.split("\t")
+  parts.each_with_index{|l,i|
+    max_lens << l.length if i==max_lens.length
+    max_lens[i] = [max_lens[i],l.length+1].max
+  }
+  matrix << parts
+}
+divider = '+'
+max_lens.each{|len|
+  divider += '-'*len+'+'
+}
+puts divider
+first = true
+matrix.each {|row|
+  puts divider if !first
+  first = false
+  line = '+'
+  max_lens.each_with_index{|l,i|
+    main = (row.length > i ? row[i] : '')
+    line += main.rjust(l)+'+'
+  }
+  puts line
+}
+puts divider
