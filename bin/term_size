@@ -9,6 +9,7 @@ if (ARGV.length >= 1)
   exit(1)
 end
 
+# sometimes it's row=80, sometimes rows 80, and sometimes 80 row
 res          = `stty -a`
 dimentions   = [0,0]
 descriptions = [['rows','row'],['cols','columns']]

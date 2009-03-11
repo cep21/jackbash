@@ -1,0 +1,29 @@
+==WHAT IS THIS==
+  This is my basic bash config setup.  It stores all my config files,
+executable scripts, and basic bash settings.  The goal is to be BSD/
+Cygwin/GNU compatible, so it can work on my windows, mac, and linux
+machines at the same time from the same codebase.  It also tries to be
+safe to add to .bashrc and .bash_profile so that it won't output
+noise and kill scp or ssh.
+
+The bashrc start script is split into three parts:
+(1) Generic bash stuff
+* Things I would want to run anywhere.  Work, home, web server, etc
+** Generic startup commands should go inside /bashrc
+** Generic binary files should go inside /bin
+(2) Per group files
+* These are things I would want to run on every work, or every school,
+computer.
+** Per group startup commands should go inside /group/group.bash
+** Per group binary files should go inside /group/bin
+(3) Per hostname files
+* These are startup commands I want to run only on specific hosts
+** Per hostname files should go inside group/hostnames
+
+Generally, the directory inside /group is a .git repository private for
+the context of that group.
+
+==HOW TO INSTALL==
+(1) Put this repository inside ~/.bash
+(2) Change your .bashrc and .bash_profile to only this line:
+source $HOME/.bash/bashrc
