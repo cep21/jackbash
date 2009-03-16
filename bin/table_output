@@ -1,13 +1,20 @@
 #!/usr/local/bin/ruby
 usage = "
-Usage: table_output 
-Takes stdin and prints it in a pretty to read for humans tabular output
+Usage: table_output [regex]
+Takes stdin and prints it in a pretty to read for humans tabular output.  The
+regular expression regex can be taken as a parameter for how to split the lines.
+
+For example, execute
+  table_output ',' < csv_sheet.csv
 ".strip
 
-if (ARGV.length >= 1)
+if (ARGV.length >= 2)
   puts usage
   exit(1)
 end
+
+regex = /\t/
+regex = Regexp.new(ARGV[0]) if ARGV.length >0
 
 lines    = Array.new
 matrix   = Array.new
@@ -15,7 +22,7 @@ max_lens = Array.new
 STDIN.each {|l|
   lines << l
   l.strip!
-  parts = l.split("\t")
+  parts = l.split(regex)
   parts.each_with_index{|l,i|
     max_lens << l.length if i==max_lens.length
     max_lens[i] = [max_lens[i],l.length+1].max
@@ -31,10 +38,10 @@ first = true
 matrix.each {|row|
   puts divider if !first
   first = false
-  line = '+'
+  line = '|'
   max_lens.each_with_index{|l,i|
     main = (row.length > i ? row[i] : '')
-    line += main.rjust(l)+'+'
+    line += main.rjust(l)+'|'
   }
   puts line
 }
