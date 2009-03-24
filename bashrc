@@ -63,6 +63,7 @@ export GIT_CEILING_DIRECTORIES=`echo $HOME | sed 's#/[^/]*$##'`
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
+export BROWSER='firefox'
 
 # export the first java home we find
 (which java &> /dev/null)
@@ -115,7 +116,7 @@ fi;
 
 # Options
 shopt -s checkwinsize
-shopt -s histappend
+shopt -s histappend   # Append to history rather than overwrite
 
 # Aliases
 alias ls='ls -h $LS_COLOR'
@@ -125,10 +126,11 @@ alias ssh='ssh -A'
 alias g='git'
 alias top='top $TOP_OPTIONS'
 alias rcopy='rsync -az --stats --progress --delete'
+alias ..='cd ..'
 
 #### RANDOM FUNCTIONS #####
-#autocomplete ant commands... but it doesn't work!
-#complete -C complete-ant-cmd ant.pl build.sh
+complete -cf sudo                              #autocomplete sudo 
+#complete -C complete-ant-cmd ant.pl build.sh  #autocomplete ant commands... but it doesn't work!
 #autocomplete ssh commands with the hostname
 complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
 # awesome!  CD AND LA. I never use 'cd' anymore...
@@ -171,8 +173,65 @@ function ask()
     esac
 }
 
+#Simple blowfish encryption
+function blow()
+{
+    [ -z "$1" ] && echo 'Encrypt: blow FILE' && return 1
+    openssl bf-cbc -salt -in "$1" -out "$1.bf"
+}
+function fish()
+{
+    test -z "$1" -o -z "$2" && echo \
+        'Decrypt: fish INFILE OUTFILE' && return 1
+    openssl bf-cbc -d -salt -in "$1" -out "$2"
+}
 
-# Global path manipulation
+# Extract based upon file ext
+function ex() {
+     if [ -f $1 ] ; then
+         case $1 in
+             *.tar.bz2)   tar xvjf $1        ;;
+             *.tar.gz)    tar xvzf $1     ;;
+             *.bz2)       bunzip2 $1       ;;
+             *.rar)       unrar x $1     ;;
+             *.gz)        gunzip $1     ;;
+             *.tar)       tar xvf $1        ;;
+             *.tbz2)      tar xvjf $1      ;;
+             *.tgz)       tar xvzf $1       ;;
+             *.zip)       unzip $1     ;;
+             *.Z)         uncompress $1  ;;
+             *.7z)        7z x $1    ;;
+             *)           echo "'$1' cannot be extracted via >extract<" ;;
+         esac
+     else
+         echo "'$1' is not a valid file"
+     fi
+}
+# Compress with tar + bzip2
+function bz2 () {
+  tar cvpjf $1.tar.bz2 $1
+}
+
+# Google the parameter
+function google () {
+  links http://google.com/search?q=$(echo "$@" | sed s/\ /+/g)
+}
+
+# anyvi <file>
+# run EDITOR on a script no matter where it is
+function anyvi()
+{
+    if [ -e "$1" ] || [ -f "$1" ]; then
+        $EDITOR $1
+    else
+        $EDITOR `which $1`
+    fi
+}
+complete -cf anyvi        #autocomplete the anyvi command
+
+
+
+
 add_path $HOME/bin
 add_path $HOME/.bash/bin
 add_path $HOME/.bash/group/bin
@@ -187,17 +246,17 @@ PROMPT_COLOR=$G
 if [ ${UID} -eq 0 ]; then
   PROMPT_COLOR=$R ### root is a red color prompt
 fi
-ESCAPED_HOME=`echo $HOME | sed $SED_EXT "s:/:\\\\\\/:g"`
-# The first little bit of insanity lets screen read the title of the running program
-# The pwd | sed lets me only see the last three directories
-#   deep so my prompt doens't get too huge!
-# Sample Prompt:
-#
-# 01:35:03 uname@server(branch):path/to/thing
-# $
-#
-PS1='\[\033k\033\\\]'$Y'\t'$N' '${PROMPT_COLOR}'\u@\h'$W'$(__git_ps1 "(%s)")'$N':`pwd | sed '$SED_EXT' "s/${ESCAPED_HOME}/~/" | sed '$SED_EXT' "s/^.*\/(.*)(\/.*)(\/.*)$/\1\2\3/"`\n\$ '
-
+# I like this prompt for a few reasons:
+# (1) The time shows when each command was executed, when I get back to my terminal
+# (2) Git information really important for git users
+# (3) Prompt color is red if I'm root
+# (4) The last part of the prompt can copy/paste directly into an SCP command
+# (5) Color highlight out the current directory because it's important
+# (6) The export PS1 is simple to understand!
+# (7) If the prev command error codes, the prompt '>' turns red
+export PS1="$Y\t$N $W"'$(__git_ps1 "(%s) ")'"$N$PROMPT_COLOR\u@\H$N:$C\w$N\n"'$CURSOR_PROMPT '
+# TODO: Find out why my $R and $N shortcuts don't work here!!!
+export PROMPT_COMMAND='if [ $? -ne 0 ]; then CURSOR_PROMPT=`echo -e "\033[0;31m>\033[0m"`; else CURSOR_PROMPT=">"; fi;'
 
 #### Source group
 GROUP_FILE="$HOME/.bash/group/group.bash"
@@ -213,10 +272,8 @@ then
   source $PERHOST_FILE  
 fi;
 
-
-# remove duplicate path entries
-#  There seem to be some bugs in this.  Inspect more later
-#export PATH=$(echo $PATH | awk -F: '
-#    { for (i = 1; i <= NF; i++) arr[$i]; }
-#    END { for (i in arr) printf "%s:" , i; printf "\n"; } ')
+# remove duplicate path entries and preserve PATH order
+export PATH=$(echo $PATH | awk -F: '
+{ for (i = 1; i <= NF; i++) if (!($i in arr)) {printf "%s:", $i;arr[$i]}; }
+END { printf "\n"; } ')
 
