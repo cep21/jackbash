@@ -1,4 +1,6 @@
 # .bashrc
+# === INTRO ===
+#
 # Welcome to the most awesome bash startup script you'll ever see.
 #   It tries to be BSD and GNU compatable, which means it works on
 #   your MAC, cygwin, and sandbox server.  It also tries to be safe 
@@ -19,6 +21,7 @@
 #
 #  This also sources executable files, inside 'bin' split the same way
 #
+#  === FILE STRUCTURE ===
 #
 #  The file is organized into the following parts
 #
@@ -34,6 +37,34 @@
 #  (10) Source per group file
 #  (11) Source per hostname file
 #  (12) Clean up PATH
+#
+#
+#  === HOW TO INSTAL ===
+#
+# (*) Step 1: create the following directory structure
+# $HOME/.bash/bashrc                                   <--- this file
+# $HOME/.bash/bin                                      <--- global binary files here
+# $HOME/.bash/config                                   <--- global config files here (.vimrc for example)
+# $HOME/.bash/term_colors                              <--- terminal colors script here
+# $HOME/.bash/group/bin                                <=-- per group bin files here
+# $HOME/.bash/group/config                             <--- per group config files here
+# $HOME/.bash/group/hostnames                          <--- per hostname startup scripts here, like
+# $HOME/.bash/group/hostnames/dev100superhostcom.bash
+# $HOME/.bash/group/group.bash                         <--- per group startup script
+#
+# (*) Step 2: Make $HOME/.bashrc only the following content:
+#  source $HOME/.bash/bashrc
+#
+# === HOW TO MAINTAIN ===
+#
+# It is split into two .git repositories.  The first is public and you can get
+#   that code by executing:
+#  git clone git://github.com/cep21/jackbash.git
+#
+# The second is private.  You should make your own .git repository inside $HOME/.bash/group
+#   Put private information there, like your email address or SSH keys
+#
+
 
 # Source global definitions
 GLOBAL_BASH_DEF='/etc/bashrc'
