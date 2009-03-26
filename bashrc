@@ -17,10 +17,23 @@
 #       * These are the commands you want to run only on the specified
 #         host
 #
+#  This also sources executable files, inside 'bin' split the same way
 #
 #
-#  This also sources binary files, inside 'bin' split the same way
-
+#  The file is organized into the following parts
+#
+#  (1) Source global definitions
+#  (2) Create global shell variables
+#  (3) Create BSD vs GNU compatable variables
+#  (4) Set shell options
+#  (5) Set aliases
+#  (6) Set autocomplete options
+#  (7) Create useful utility bash functions()
+#  (8) Setup global path
+#  (9) Setup the prompt
+#  (10) Source per group file
+#  (11) Source per hostname file
+#  (12) Clean up PATH
 
 # Source global definitions
 GLOBAL_BASH_DEF='/etc/bashrc'
@@ -28,7 +41,6 @@ if [ -f $GLOBAL_BASH_DEF ]
 then
   source $GLOBAL_BASH_DEF
 fi;
-
 
 # Create a scrubed hostname
 export HOSTNAME_SCRUB=`hostname | sed -e s/[^a-z0-9_]//g`
@@ -57,9 +69,7 @@ ex=01;32:\
 *.ogg=01;35:*.mp3=01;35:*.wav=01;35:\
 ";
 export GREP_OPTIONS='--color=auto'
-# Make the git ceil dir /home from /home/uname
-#   or, on a mac /Users from /Users/uname
-export GIT_CEILING_DIRECTORIES=`echo $HOME | sed 's#/[^/]*$##'`
+export GIT_CEILING_DIRECTORIES=`echo $HOME | sed 's#/[^/]*$##'`  # Either /home(linux) or /Users(mac)
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
@@ -126,26 +136,19 @@ alias ssh='ssh -A'
 alias g='git'
 alias top='top $TOP_OPTIONS'
 alias rcopy='rsync -az --stats --progress --delete'
-alias ..='cd ..'
+alias ..='cl ..'
 
-#### RANDOM FUNCTIONS #####
-complete -cf sudo                              #autocomplete sudo 
+# Auto completion
+complete -cf sudo
+complete -cf which
 #complete -C complete-ant-cmd ant.pl build.sh  #autocomplete ant commands... but it doesn't work!
 #autocomplete ssh commands with the hostname
 complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
+
+
+#### RANDOM FUNCTIONS #####
 # awesome!  CD AND LA. I never use 'cd' anymore...
 function cl(){ cd "$@" && la; }
-# cat the contents of a command
-function catw(){
-# TODO: This doesn't work.  Why?
-  FILE_NAME="`which $1`"
-  if [ -r $FILE_NAME ]; then
-    cat $FILE_NAME
-  else
-    echo "Cannot find file"
-  fi;
-}
-complete -c default catw
 # Two standard functions to change $PATH
 add_path() { export PATH="$PATH:$1"; }
 add_pre_path() { export PATH="$1:$PATH"; }
@@ -157,7 +160,7 @@ function repeat()
 {
     local i max
     max=$1; shift;
-    for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+    for ((i=1; i <= max ; i++)); do
         eval "$@";
     done
 }
@@ -229,9 +232,6 @@ function anyvi()
 }
 complete -cf anyvi        #autocomplete the anyvi command
 
-
-
-
 add_path $HOME/bin
 add_path $HOME/.bash/bin
 add_path $HOME/.bash/group/bin
@@ -246,6 +246,7 @@ PROMPT_COLOR=$G
 if [ ${UID} -eq 0 ]; then
   PROMPT_COLOR=$R ### root is a red color prompt
 fi
+
 # I like this prompt for a few reasons:
 # (1) The time shows when each command was executed, when I get back to my terminal
 # (2) Git information really important for git users
@@ -264,7 +265,6 @@ if [ -f $GROUP_FILE ]
 then
   source $GROUP_FILE
 fi;
-
 ##### Source the correct per-host file
 PERHOST_FILE="$HOME/.bash/group/hostnames/$HOSTNAME_SCRUB.bash"
 if [ -f $PERHOST_FILE ]
