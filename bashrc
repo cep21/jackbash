@@ -305,6 +305,6 @@ fi;
 
 # remove duplicate path entries and preserve PATH order
 export PATH=$(echo $PATH | awk -F: '
-{ for (i = 1; i <= NF; i++) if (!($i in arr)) {printf "%s:", $i;arr[$i]}; }
+{ start=0; for (i = 1; i <= NF; i++) if (!($i in arr) && $i) {if (start!=0) printf ":";start=1; printf "%s", $i;arr[$i]}; }
 END { printf "\n"; } ')
 
