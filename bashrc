@@ -128,14 +128,6 @@ else
   export SED_EXT='-E'
 fi
 
-# GNU vs BSD hostname
-(hostname -i &> /dev/null)
-if [ $? -eq 0 ]; then
-  export MY_IP=`hostname -i`
-else
-  # default to eth0 IP, for MAC
-  export MY_IP=`ipconfig getifaddr en0`
-fi;
 
 # GNU vs BSD ls for color
 (ls --color=tty &> /dev/null)
@@ -250,6 +242,18 @@ function bz2 () {
 function google () {
   links http://google.com/search?q=$(echo "$@" | sed s/\ /+/g)
 }
+
+function myip () { 
+ # GNU vs BSD hostname
+ (hostname -i &> /dev/null)
+  if [ $? -eq 0 ]; then
+    echo `hostname -i`
+  else
+    # default to eth0 IP, for MAC
+    echo `ipconfig getifaddr en0`
+  fi;
+}
+
 
 # anyvi <file>
 # run EDITOR on a script no matter where it is
