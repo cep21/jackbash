@@ -105,6 +105,7 @@ export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
 export BROWSER='firefox'
+export LANG='en_US.utf8'
 
 # export the first java home we find
 (which java &> /dev/null)
