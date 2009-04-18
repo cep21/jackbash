@@ -1,10 +1,19 @@
 #!/bin/bash
 # A pretty looking git-svn-rebase that is way better than the default
+
+#git stash > /dev/null
 SVN_REF=`git config svn-remote.svn.fetch | sed s/.*://`
 OLD_SVN=`git rev-parse $SVN_REF`
+CUR_BRANCH=`git status | grep 'On branch' | sed  's/# On branch //'`
 git svn fetch > /dev/null
+#git rebase $SVN_REF > /dev/null
+# Lol xargs and && is crazy
+#git branch --no-abbrev -v --no-color | sed 's/[ *]*//' | cut -d' ' -f1 | xargs -i echo "git checkout -q {} && git rebase $SVN_REF" | sh > /dev/null
 git rebase $SVN_REF > /dev/null
 REBASE_RETURN_CODE="$?"
+git checkout -q $CUR_BRANCH
 git log $OLD_SVN..$SVN_REF --stat=80,120 --pretty=format:'%Cred%an%Creset %Cgreen%H%Creset %s'
-git gcbr
+#git gcbr Comment out to limit dependency
+git branch --no-abbrev -v --no-color | sed 's/[ *]*//' | cut -d' ' -f1 | xargs -n1 git branch -d &> /dev/null
+#git stash apply > /dev/null
 exit $REBASE_RETURN_CODE
