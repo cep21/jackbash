@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+usage = "
+Usage: proc_command_spawn atonce
+Reads processes to run from stdin and runs numtimes of them at once, pushing 
+output to stdout.  Custom made for machines with multiple cores that xargs
+won't take advantage of.
+".strip()
+if (ARGV.length != 1)
+  puts usage
+  exit(1)
+end
+
+require 'thread'
+semaphore  = Mutex.new
+semaphore2 = Mutex.new
+
+# reverse allows easy pop
+processes = STDIN.read.split("\n").reverse
+atonce    = ARGV[0].to_i
+$full_result   = ''
+
+def spawn_watcher(processes, proc_lock, stdout_lock)
+  return Thread.new() {
+    while (true) do
+      proc_to_run = nil
+      proc_lock.synchronize{
+        proc_to_run = processes.pop
+      }
+      break if proc_to_run == nil
+      proc = IO.popen(proc_to_run)
+      result = proc.readlines.to_s
+      proc.close
+      stdout_lock.synchronize{
+        $full_result += result
+      }
+    end
+  }
+end
+
+runners = Array.new
+atonce.times do |l|
+  runners << spawn_watcher(processes, semaphore, semaphore2)
+end
+runners.each{ |t|
+ t.join
+}
+puts $full_result
