@@ -17,7 +17,6 @@ semaphore2 = Mutex.new
 # reverse allows easy pop
 processes = STDIN.read.split("\n").reverse
 atonce    = ARGV[0].to_i
-$full_result   = ''
 
 def spawn_watcher(processes, proc_lock, stdout_lock)
   return Thread.new() {
@@ -31,7 +30,7 @@ def spawn_watcher(processes, proc_lock, stdout_lock)
       result = proc.readlines.to_s
       proc.close
       stdout_lock.synchronize{
-        $full_result += result
+        puts result
       }
     end
   }
@@ -44,4 +43,3 @@ end
 runners.each{ |t|
  t.join
 }
-puts $full_result
