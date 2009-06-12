@@ -106,6 +106,10 @@ export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
 export BROWSER='firefox'
 export LANG='en_US.utf8'
+if [ -f "$HOME/.inputrc" ]; then
+  export INPUTRC="$HOME/.inputrc"
+fi;
+export MAN_AUTOCOMP_FILE="/tmp/man_completes_`whoami`"
 
 # export the first java home we find
 (which java &> /dev/null)
@@ -165,9 +169,25 @@ alias ..='cl ..'
 # Auto completion
 complete -cf sudo
 complete -cf which
-#complete -C complete-ant-cmd ant.pl build.sh  #autocomplete ant commands... but it doesn't work!
 #autocomplete ssh commands with the hostname
 complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
+
+# autocomplete man commands
+function listmans_raw() {
+  for dir in $(/usr/bin/man -W | /usr/bin/tr ':' '\n'); do
+    find "${dir}" ! -type d -name "*.*" 2>/dev/null | sed -e 's#/.*/##g' | sed -e 's#.[^.]*$##g' | sed -e 's#\.[0123456789].*##g'
+  done
+}
+function regen_man_args() {
+  listmans_raw | sort -u > $MAN_AUTOCOMP_FILE
+}
+function listmans() {
+  if [ ! -f $MAN_AUTOCOMP_FILE ]; then
+    regen_man_args
+  fi;
+  cat $MAN_AUTOCOMP_FILE
+}
+complete -W "$(listmans)" man
 
 
 #### RANDOM FUNCTIONS #####
@@ -267,6 +287,17 @@ function anyvi()
     fi
 }
 complete -cf anyvi        #autocomplete the anyvi command
+
+# Grep for a process while at the same time ignoring the grep that
+# you're running.  For example
+#   ps awxxx | grep java
+# will show "grep java", which is probably not what you want
+function psgrep(){
+  local OUTFILE=`mktemp`
+  ps awxxx > $OUTFILE
+  grep $@ $OUTFILE
+  rm $OUTFILE
+}
 
 add_path $HOME/bin
 add_path $HOME/.bash/bin
