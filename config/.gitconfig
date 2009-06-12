@@ -9,14 +9,20 @@
   ci = commit
   di = diff
   st = status
-  # Show the commits in this branch
-  showbr = log -U git-svn..
+  # Show the commits and content in this branch
+  showbr = log --pretty=oneline trunk..
+  showallbr = log -U trunk ..
   # Change the HEAD commit message to the template and edit
   amd = !git commit --amend -eF `git config commit.template`
   # Safe remove all branches reachable from HEAD.  Good way to GC old branches after dcommit/rebase
-  gcbr = !git branch --no-abbrev -v --no-color | sed 's/[ *]*//' | cut -d' ' -f1 | xargs -n1 git branch -d &> /dev/null
+  gcbr = !git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || exit 0
   # Spellcheck your commit message
   aspell = !git log --pretty=format:%s%n%n%b -n1 > /tmp/aspell.txt && aspell -c /tmp/aspell.txt && git commit --amend -F /tmp/aspell.txt
+  # Commit changes to current head as amended commit
+  plus = commit --amend -a -C HEAD
+  # Commit changes on *top* of current head as a checkpoint commit
+  cp = commit -am 'cp'
+
 
 [svn]
   followparent = true
