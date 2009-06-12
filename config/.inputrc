@@ -1,0 +1,14 @@
+$include /etc/inputrc
+set show-all-if-ambiguous on
+set completion-ignore-case on
+set bell-style visible
+set input-meta on
+
+# Cycle through command history by typing "git " then
+# <up> arrow
+Control-p:history-search-backward
+Control-n:history-search-forward
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+"\e[C":forward-char
+"\e[D":backward-char
