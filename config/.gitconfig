@@ -22,7 +22,8 @@
   plus = commit --amend -a -C HEAD
   # Commit changes on *top* of current head as a checkpoint commit
   cp = commit -am 'cp'
-
+  # Grep with color and line numbers
+  gr = grep --color -n
 
 [svn]
   followparent = true

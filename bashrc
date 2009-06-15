@@ -293,7 +293,7 @@ complete -cf anyvi        #autocomplete the anyvi command
 #   ps awxxx | grep java
 # will show "grep java", which is probably not what you want
 function psgrep(){
-  local OUTFILE=`mktemp`
+  local OUTFILE=`mktemp /tmp/psgrep.XXXXX`
   ps awxxx > $OUTFILE
   grep $@ $OUTFILE
   rm $OUTFILE
