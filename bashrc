@@ -40,20 +40,8 @@
 #
 #
 #  === HOW TO INSTAL ===
-#
-# (*) Step 1: create the following directory structure
-# $HOME/.bash/bashrc                                   <--- this file
-# $HOME/.bash/bin                                      <--- global binary files here
-# $HOME/.bash/config                                   <--- global config files here (.vimrc for example)
-# $HOME/.bash/term_colors                              <--- terminal colors script here
-# $HOME/.bash/group/bin                                <=-- per group bin files here
-# $HOME/.bash/group/config                             <--- per group config files here
-# $HOME/.bash/group/hostnames                          <--- per hostname startup scripts here, like
-# $HOME/.bash/group/hostnames/dev100superhostcom.bash
-# $HOME/.bash/group/group.bash                         <--- per group startup script
-#
-# (*) Step 2: Make $HOME/.bashrc only the following content:
-#  source $HOME/.bash/bashrc
+#  Execute
+#    ./install_bashrc
 #
 # === HOW TO MAINTAIN ===
 #

@@ -1,0 +1,20 @@
+#!/bin/bash
+# Install script for .bashrc settings
+
+INSTALL_DIR="$HOME/.bash"
+if [ -d $INSTALL_DIR ]
+then
+  echo "Looks like you have a $INSTALL_DIR directory installed.  Good job!"
+  exit
+fi;
+
+git clone git://github.com/cep21/jackbash.git $INSTALL_DIR
+
+for x in [ $HOME/.bashrc $HOME/.profile $HOME/.bash_profile ]; do
+  if [ -f $x ]
+  then
+    mv $x "$x"_backup
+  fi;
+  echo "source $INSTALL_DIR/bashrc" > $x
+done
+
