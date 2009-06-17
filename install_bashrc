@@ -2,19 +2,31 @@
 # Install script for .bashrc settings
 
 INSTALL_DIR="$HOME/.bash"
-if [ -d $INSTALL_DIR ]
-then
+if [ -d $INSTALL_DIR ]; then
   echo "Looks like you have a $INSTALL_DIR directory installed.  Good job!"
   exit
 fi;
 
 git clone git://github.com/cep21/jackbash.git $INSTALL_DIR
 
-for x in [ $HOME/.bashrc $HOME/.profile $HOME/.bash_profile ]; do
-  if [ -f $x ]
-  then
+for x in $HOME/.bashrc $HOME/.profile $HOME/.bash_profile ; do
+  if [ -e $x ]; then
     mv $x "$x"_backup
   fi;
   echo "source $INSTALL_DIR/bashrc" > $x
 done
 
+if [ ! -e $HOME/.gitconfig ]; then
+  # Copy because you have to fill in your user name
+  cp $INSTALL_DIR/config/.gitconfig $HOME/.gitconfig
+fi;
+
+if [ -e $HOME/.screenrc ]; then
+  mv $HOME/.screenrc $HOME/.screenrc_backup
+fi;
+ln -s $INSTALL_DIR/config/.screenrc $HOME/.screenrc
+
+if [ -e $HOME/.inputrc ]; then
+  mv $HOME/.inputrc $HOME/.inputrc_backup
+fi;
+ln -s $INSTALL_DIR/config/.inputrc $HOME/.inputrc
