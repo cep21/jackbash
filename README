@@ -24,6 +24,9 @@ Generally, the directory inside /group is a .git repository private for
 the context of that group.
 
 ==HOW TO INSTALL==
-(1) Put this repository inside ~/.bash
-(2) Change your .bashrc and .bash_profile to only this line:
-source $HOME/.bash/bashrc
+cd ~
+git clone git://github.com/cep21/jackbash.git
+cd jackbash
+./install_bashrc
+cd ..
+rm -rf jackbash
