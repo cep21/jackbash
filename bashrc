@@ -102,7 +102,7 @@ export MAN_AUTOCOMP_FILE="/tmp/man_completes_`whoami`"
 # export the first java home we find
 (which java &> /dev/null)
 if [ $? -eq 0 ]; then
-  JAVA_IN_PATH=`ls -la \`which java\` | sed s/.*-\>[^/]*// | sed s#/bin/java##`
+  JAVA_IN_PATH=`ls -la "\`which java\`" | sed s/.*-\>[^/]*// | sed s#/bin/java##`
 fi;
 for x in [ $JAVA_IN_PATH ]; do
   if [ -d $x ]; then
@@ -158,7 +158,7 @@ alias ..='cl ..'
 complete -cf sudo
 complete -cf which
 #autocomplete ssh commands with the hostname
-complete -W "$(echo `cat ~/.ssh/known_hosts | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
+complete -W "$(echo `cat ~/.ssh/known_hosts 2> /dev/null | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
 
 # autocomplete man commands
 function listmans_raw() {
