@@ -18,7 +18,8 @@ startup_message off                     # Turn off the splash screen
 hardstatus alwayslastline
 # 'always' keeps the caption even if only one window is shown
 #caption always '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%<'
-hardstatus string '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%< %{= kG}%-=%H %D %d %M %Y %c:%s%{-}'
+#hardstatus string '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%< %{= kG}%-=%H %D %d %M %Y %c:%s%{-}'
+hardstatus string  '%{= Kw}%-Lw%{=b bW}%50>%n: %t%{= Kw}%+Lw%< %{= kG}%-=%D %d %M %Y %c:%s%{-}'
 
 # startup some programs in the appropriate windows
 #screen 2 program
