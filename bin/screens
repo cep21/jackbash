@@ -47,7 +47,7 @@ done`
 
 if [[ "$name" != "" ]]
 then
-   screen -d -r "$name"
+   screen -RUD  "$name"
 else
    echo "  Could not reattach to '$session'"
 fi

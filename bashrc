@@ -93,7 +93,8 @@ export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
 export BROWSER='firefox'
-export LANG='en_US.utf8'
+#export LANG='en_US.utf8'
+export LANG='C' # Testing: Try out the C locale
 if [ -f "$HOME/.inputrc" ]; then
   export INPUTRC="$HOME/.inputrc"
 fi;
@@ -153,6 +154,8 @@ alias g='git'
 alias top='top $TOP_OPTIONS'
 alias rcopy='rsync -az --stats --progress --delete'
 alias ..='cl ..'
+alias trim_whitespace="sed -i 's/[ \t]*$//' "
+alias sush='sudo ssh'
 
 # Auto completion
 complete -cf sudo
@@ -293,6 +296,10 @@ function psgrep(){
   grep $@ $OUTFILE
   rm $OUTFILE
 }
+
+# Quick and dirty calculator.  Goes right to ruby and lets you print out
+#   the results of math operations, or other ruby expressions
+function calc(){ ruby -e "puts $*"; }
 
 add_path $HOME/bin
 add_path $HOME/.bash/bin

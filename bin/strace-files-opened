@@ -1,0 +1,9 @@
+#!/bin/zsh -f
+# This script postprocess strace-output so you can see what files are opened when
+# running a program/script and its child processes
+strace -f "$@" |& perl -ne '
+if (/open\("(.*?)",/) { 
+  $files{$1}++; 
+} 
+
+END {print join("\n",sort keys %files), "\n";} '
