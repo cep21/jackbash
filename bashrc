@@ -156,6 +156,7 @@ alias rcopy='rsync -az --stats --progress --delete'
 alias ..='cl ..'
 alias trim_whitespace="sed -i 's/[ \t]*$//' "
 alias sush='sudo ssh'
+alias http_headers='curl -svo /dev/null'
 
 # Auto completion
 complete -cf sudo
