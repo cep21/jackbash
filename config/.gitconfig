@@ -24,6 +24,10 @@
   cp = commit -am 'cp'
   # Grep with color and line numbers
   gr = grep --color -n
+  # Colorized git blame
+  bl = !colorize_git_blame_pipe.sh $@
+  # Search javascript for a variable/function definition
+  jsdef = !sh -c 'git grep -e "function\\\\W+$1\\\\W" --or -e "function\\\\W*/\\\\*.*\\\\*/\\\\W*$1\\\\W" --or -e "\\\\W$1\\\\W*[=:]" -- *.js' -
 
 [svn]
   followparent = true
@@ -36,6 +40,9 @@
 # Show a log of '56 minutes ago' rather than 'November 12, 2008 12:34:53'
 [log]
   date = relative
+
+[push]
+  default = tracking
 
 # Use only for black background terminal
 [color "branch"]
