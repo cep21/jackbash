@@ -155,7 +155,7 @@ alias top='top $TOP_OPTIONS'
 alias rcopy='rsync -az --stats --progress --delete'
 alias ..='cl ..'
 alias trim_whitespace="sed -i 's/[ \t]*$//' "
-alias sush='sudo ssh'
+alias sush='ssh -l root'
 alias http_headers='curl -svo /dev/null'
 
 # Auto completion
