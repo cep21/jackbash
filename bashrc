@@ -56,10 +56,10 @@
 
 # Source global definitions
 GLOBAL_BASH_DEF='/etc/bashrc'
-if [ -f $GLOBAL_BASH_DEF ]
-then
-  source $GLOBAL_BASH_DEF
-fi;
+#if [ -f $GLOBAL_BASH_DEF ]
+#then
+#  source $GLOBAL_BASH_DEF
+#fi;
 
 # Create a scrubed hostname
 export HOSTNAME_SCRUB=`hostname | sed -e s/[^a-z0-9_]//g`
@@ -274,6 +274,11 @@ function myip () {
   fi;
 }
 
+function dumptcp() {
+ # TCPDUMP all the data on port $1 into rotated files /tmp/results.  Note,
+ # this can get VERY large
+  sudo /usr/sbin/tcpdump -i any -s0 tcp port $1 -A -w /tmp/results -C 100
+}
 
 # anyvi <file>
 # run EDITOR on a script no matter where it is
