@@ -2,6 +2,11 @@
 # A pretty looking git-svn-rebase that is way better than the default
 
 # TODO: Make this work for non-SVN repositories
+GROUP_VERSION="$HOME/.bash/group/bin/git-mybase"
+if [ -f $GROUP_VERSION ]; then
+  source $GROUP_VERSION
+  exit
+fi;
 SVN_REF=`git config svn-remote.svn.fetch | sed s/.*://`
 OLD_SVN=`git rev-parse $SVN_REF`
 CUR_BRANCH=`git status | grep -P '^# On branch' | sed  's/# On branch //'`

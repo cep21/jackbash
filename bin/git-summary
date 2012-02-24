@@ -1,0 +1,2 @@
+#!/bin/bash
+git log --format="%h%x00%cr%x00%an%x00%s%x00" . | ruby -nae '$a=$_.split("\00");printf("%8s \033[34m\%23s\033[0m\ \033[33m\%12s\033[0m\ %s\n", $a[0], $a[1], $a[2], $a[3])'
