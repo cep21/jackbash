@@ -3,6 +3,9 @@
 #  Two usages.
 #   (1) notifyme_email ls -R /
 #   (2) echo "Hello bob"; notifyme_email
+#
+# Puts the first 50 lines of stdout into the email body.
+# Attaches the rest
 if [ $# -eq "0" ]; then
   echo "Trigger!"| mutt -s "Notification triggered on `hostname` by `whoami`!" $EMAIL
   exit
@@ -16,5 +19,5 @@ if [ ${PIPESTATUS[0]} -eq "0" ]; then
 else
   res="Failure $?"
 fi
-mutt -s "Process result: $res $args" $EMAIL < $file
+head -n50 $file | mutt -s "Process result: $res $args" -a $file $EMAIL
 rm -f $file
