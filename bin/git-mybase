@@ -7,17 +7,33 @@ if [ -f $GROUP_VERSION ]; then
   source $GROUP_VERSION
   exit
 fi;
-SVN_REF=`git config svn-remote.svn.fetch | sed s/.*://`
-OLD_SVN=`git rev-parse $SVN_REF`
-CUR_BRANCH=`git status | grep -P '^# On branch' | sed  's/# On branch //'`
-git svn fetch > /dev/null
-git rebase $SVN_REF > /dev/null
-# Lol xargs and && is crazy
-# Use this if you want to rebase every branch when you rebase
-#git branch --no-abbrev -v --no-color | sed 's/[ *]*//' | cut -d' ' -f1 | xargs -i echo "git checkout -q {} && git rebase $SVN_REF" | sh > /dev/null
-REBASE_RETURN_CODE="$?"
-git checkout -q $CUR_BRANCH
-git log $OLD_SVN..$SVN_REF --stat=80,120 --pretty=format:'%Cred%an%Creset %Cgreen%H%Creset %s'
-# You need gcbr as defined my my .gitconfig
+git svn info &> /dev/null
+if [ $? -eq 0 ]; then
+    SVN_REF=`git config svn-remote.svn.fetch | sed s/.*://`
+    OLD_SVN=`git rev-parse $SVN_REF`
+    CUR_BRANCH=`git status | grep -P '^# On branch' | sed  's/# On branch //'`
+    git svn fetch > /dev/null
+    git rebase $SVN_REF > /dev/null
+    # Lol xargs and && is crazy
+    # Use this if you want to rebase every branch when you rebase
+    #git branch --no-abbrev -v --no-color | sed 's/[ *]*//' | cut -d' ' -f1 | xargs -i echo "git checkout -q {} && git rebase $SVN_REF" | sh > /dev/null
+    REBASE_RETURN_CODE="$?"
+    git checkout -q $CUR_BRANCH
+    git log $OLD_SVN..$SVN_REF --stat=80,120 --pretty=format:'%Cred%an%Creset %Cgreen%H%Creset %s'
+    # You need gcbr as defined my my .gitconfig
+    git gcbr
+    exit $REBASE_RETURN_CODE
+fi;
+# Not svn.  Maybe pure git?
+REMOTE_BRANCH=`git rev-parse --abbrev-ref --symbolic-full-name @{u}`
+REMOTE_ORIGIN=`git rev-parse --abbrev-ref --symbolic-full-name @{u} | grep -oP '^(.*?)/' | sed 's#/##'`
+if [ $? -ne 0 ]; then
+    echo "Cannot find tracking branch!"
+    exit 1
+fi;
+#echo "Fetching from $REMOTE_ORIGIN"
+#git fetch $REMOTE_ORIGIN
+echo "pull --rebase"
+git pull --rebase
 git gcbr
-exit $REBASE_RETURN_CODE
+echo "Done"
