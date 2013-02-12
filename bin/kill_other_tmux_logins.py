@@ -12,6 +12,7 @@ def execute_required(commands):
     last_pipe = None
     pipes = []
     for command in commands:
+        print " ".join(command)
         if last_pipe is not None:
             stdin = last_pipe.stdout
         else:
@@ -63,7 +64,7 @@ for session in sessions:
         pts = session.getPts()
         tokill_line = execute_required([
             ["ps", "auwxxx"],
-            ["grep", "sshd.*" + pts + "$"],
+            ["grep", "sshd.*" + pts + "[ ]*$"],
         ])
         tokill_parts = re.split("\s+", tokill_line.strip())
         tokill_id = int(tokill_parts[1])
