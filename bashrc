@@ -164,6 +164,9 @@ complete -cf which
 #autocomplete ssh commands with the hostname
 complete -W "$(echo `cat ~/.ssh/known_hosts 2> /dev/null | cut -f 1 -d ' ' | sed -e s/,.*//g | uniq | grep -v "\["`;)" ssh
 
+# Maven auto completion
+. ~/.bash/config/mvn_bash_completion.bash
+
 # autocomplete man commands
 function listmans_raw() {
   local manpath_func
