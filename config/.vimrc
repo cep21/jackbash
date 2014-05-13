@@ -1,7 +1,7 @@
 " Setup for vundle
 set nocompatible
 filetype off
-set rtp+=~/.vim/bundle/vundle/
+set rtp+=~/.vim/bundle/Vundle.vim/
 call vundle#rc()
 " How I manage all my plugins
 Bundle 'gmarik/vundle'
@@ -12,9 +12,9 @@ Bundle 'scrooloose/syntastic'
 " Gives me ; to explore files
 Bundle 'wincent/Command-T'
 " Manage window sessions with SaveSession
-Bundle 'xolox/vim-session'
+" Bundle 'xolox/vim-session'
 " Show possible tab completions while editting
-Bundle 'Valloric/YouCompleteMe'
+" Bundle 'Valloric/YouCompleteMe'
 " Explore tags (:TlistOpen)
 Bundle 'taglist.vim'
 " Not really sure why I need this
@@ -24,7 +24,9 @@ filetype plugin indent on
 map ; :CommandT<CR>
 
 " Source company specific vim settings
-source ~/.bash/group/vimrc
+if filereadable(glob("~/.bash/group/vimrc")) 
+  source ~/.bash/group/vimrc
+endif
 " Allos recursive tags file searching
 set tags=tags;/
 
