@@ -5,6 +5,8 @@ set rtp+=~/.vim/bundle/Vundle.vim/
 call vundle#rc()
 " How I manage all my plugins
 Bundle 'gmarik/vundle'
+" Dockerfile syntax support
+Bundle "ekalinin/Dockerfile.vim"
 " Git support (:Gstatus)
 Bundle 'tpope/vim-fugitive'
 " Gives me the left side highlighting
