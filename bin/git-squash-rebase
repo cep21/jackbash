@@ -1,0 +1,34 @@
+#!/bin/bash
+git status &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git status.  Please resolve."
+  exit 1
+fi;
+git fetch &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git fetch.  Please resolve."
+  exit 1
+fi;
+git rebase origin/master &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git rebase.  Please resolve."
+  exit 1
+fi;
+
+git reset origin/master &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git reset.  Please resolve."
+  exit 1
+fi;
+
+git add --ignore-removal . &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git add.  Please resolve."
+  exit 1
+fi;
+
+git commit -m 'cp'
+if [ $? -ne 0 ]; then
+  echo "Unclean git commit.  Please resolve."
+  exit 1
+fi;
