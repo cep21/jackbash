@@ -253,6 +253,7 @@ function ex() {
              *.tar)       tar xvf $1        ;;
              *.tbz2)      tar xvjf $1      ;;
              *.tgz)       tar xvzf $1       ;;
+             *.jar)       jar xf $1       ;;
              *.zip)       unzip $1     ;;
              *.Z)         uncompress $1  ;;
              *.7z)        7z x $1    ;;
@@ -369,3 +370,8 @@ export PATH=$(echo $PATH | awk -F: '
 { start=0; for (i = 1; i <= NF; i++) if (!($i in arr) && $i) {if (start!=0) printf ":";start=1; printf "%s", $i;arr[$i]}; }
 END { printf "\n"; } ')
 
+
+# Setting PATH for Python 3.4
+# The orginal version is saved in .bash_profile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.4/bin:${PATH}"
+export PATH

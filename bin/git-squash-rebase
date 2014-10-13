@@ -4,6 +4,19 @@ if [ $? -ne 0 ]; then
   echo "Unclean git status.  Please resolve."
   exit 1
 fi;
+
+git add --all  . &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git add.  Please resolve."
+  exit 1
+fi;
+
+git commit -m 'cp' &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Unclean git commit.  Please resolve."
+  exit 1
+fi;
+
 git fetch &> /dev/null
 if [ $? -ne 0 ]; then
   echo "Unclean git fetch.  Please resolve."
@@ -21,13 +34,13 @@ if [ $? -ne 0 ]; then
   exit 1
 fi;
 
-git add --ignore-removal . &> /dev/null
+git add --all  . &> /dev/null
 if [ $? -ne 0 ]; then
   echo "Unclean git add.  Please resolve."
   exit 1
 fi;
 
-git commit -m 'cp'
+git commit -m 'cp' &> /dev/null
 if [ $? -ne 0 ]; then
   echo "Unclean git commit.  Please resolve."
   exit 1
