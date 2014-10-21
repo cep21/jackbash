@@ -1,26 +1,29 @@
 " Setup for vundle
 set nocompatible
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 " How I manage all my plugins
-Bundle 'gmarik/vundle'
+Plugin 'gmarik/vundle'
 " Dockerfile syntax support
-Bundle "ekalinin/Dockerfile.vim"
+Plugin 'ekalinin/Dockerfile.vim'
 " Git support (:Gstatus)
-Bundle 'tpope/vim-fugitive'
+Plugin 'tpope/vim-fugitive'
 " Gives me the left side highlighting
-Bundle 'scrooloose/syntastic'
+Plugin 'scrooloose/syntastic'
 " Gives me ; to explore files
-Bundle 'wincent/Command-T'
+Plugin 'wincent/Command-T'
 " Manage window sessions with SaveSession
 " Bundle 'xolox/vim-session'
 " Show possible tab completions while editting
 " Bundle 'Valloric/YouCompleteMe'
 " Explore tags (:TlistOpen)
-Bundle 'taglist.vim'
-" Not really sure why I need this
+Plugin 'taglist.vim'
+" Rustlang syntastic checks
+Plugin 'wting/rust.vim'
+call vundle#end()
 filetype plugin indent on
+syntax on
 
 " Supports Command-T as ;
 map ; :CommandT<CR>
