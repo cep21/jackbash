@@ -1,3 +1,4 @@
+#!/bin/bash
 # .bashrc
 # === INTRO ===
 #
@@ -55,22 +56,28 @@
 
 
 # Source global definitions
-GLOBAL_BASH_DEF='/etc/bashrc'
+#GLOBAL_BASH_DEF='/etc/bashrc'
 #if [ -f $GLOBAL_BASH_DEF ]
 #then
 #  source $GLOBAL_BASH_DEF
 #fi;
 
 # Create a scrubed hostname
-export HOSTNAME_SCRUB=`hostname | sed -e s/[^a-z0-9_]//g`
+HOSTNAME_SCRUB=$(hostname | sed -e s/[^a-z0-9_]//g)
 
 
 # Global variables
 # Sometimes EDITOR require a complete path
-export EDITOR=`which vim`
-export SVN_EDITOR=`which vim`
-export GIT_EDITOR=`which vim`
-export PAGER=`which less`
+VIM_PATH=$(which vim)
+if [ $? -eq 0 ]; then
+  export EDITOR=$VIM_PATH
+  export SVN_EDITOR=$VIM_PATH
+  export GIT_EDITOR=$VIM_PATH
+fi
+LESS_PATH=$(which less)
+if [ $? -eq 0 ]; then
+  export PAGER=$LESS_PATH
+fi
 export LS_COLORS="no=00:\
 fi=00:\
 di=01;36:\
@@ -88,7 +95,8 @@ ex=01;32:\
 *.ogg=01;35:*.mp3=01;35:*.wav=01;35:\
 ";
 export GREP_OPTIONS='--color=auto'
-export GIT_CEILING_DIRECTORIES=`echo $HOME | sed 's#/[^/]*$##'`  # Either /home(linux) or /Users(mac)
+export GIT_CEILING_DIRECTORIES
+GIT_CEILING_DIRECTORIES=$(echo $HOME | sed 's#/[^/]*$##')  # Either /home(linux) or /Users(mac)
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
@@ -98,20 +106,8 @@ export LANG='C' # Testing: Try out the C locale
 if [ -f "$HOME/.inputrc" ]; then
   export INPUTRC="$HOME/.inputrc"
 fi;
-export MAN_AUTOCOMP_FILE="/tmp/man_completes_`whoami`"
-
-# export the first java home we find
-(which java &> /dev/null)
-if [ $? -eq 0 ]; then
-  JAVA_IN_PATH=`ls -la "\`which java\`" | sed s/.*-\>[^/]*// | sed s#/bin/java##`
-fi;
-for x in [ $JAVA_IN_PATH ]; do
-  if [ -d $x ]; then
-    export JAVA_HOME=$x
-    break
-  fi
-done
-
+export MAN_AUTOCOMP_FILE
+MAN_AUTOCOMP_FILE="/tmp/man_completes_$(whoami)"
 
 # Compatability options
 # The BSD sed on mac uses -E, while the GNU one on linux uses -r
@@ -187,13 +183,13 @@ function listmans_raw() {
   done
 }
 function regen_man_args() {
-  listmans_raw | sort -u > $MAN_AUTOCOMP_FILE
+  listmans_raw | sort -u > "$MAN_AUTOCOMP_FILE"
 }
 function listmans() {
-  if [ ! -f $MAN_AUTOCOMP_FILE ]; then
+  if [ ! -f "$MAN_AUTOCOMP_FILE" ]; then
     regen_man_args
   fi;
-  cat $MAN_AUTOCOMP_FILE
+  cat "$MAN_AUTOCOMP_FILE"
 }
 complete -W "$(listmans)" man
 
@@ -221,7 +217,7 @@ function repeat()
 #  ask 'Do you want to rebase?' && git svn rebase || echo 'Rebase aborted'
 function ask()
 {
-    echo -n "$@" '[y/n] ' ; read ans
+    echo -n "$@" '[y/n] ' ; read -r ans
     case "$ans" in
         y*|Y*) return 0 ;;
         *) return 1 ;;
@@ -243,20 +239,20 @@ function fish()
 
 # Extract based upon file ext
 function ex() {
-     if [ -f $1 ] ; then
-         case $1 in
-             *.tar.bz2)   tar xvjf $1        ;;
-             *.tar.gz)    tar xvzf $1     ;;
-             *.bz2)       bunzip2 $1       ;;
-             *.rar)       unrar x $1     ;;
-             *.gz)        gunzip $1     ;;
-             *.tar)       tar xvf $1        ;;
-             *.tbz2)      tar xvjf $1      ;;
-             *.tgz)       tar xvzf $1       ;;
-             *.jar)       jar xf $1       ;;
-             *.zip)       unzip $1     ;;
-             *.Z)         uncompress $1  ;;
-             *.7z)        7z x $1    ;;
+     if [ -f "$1" ] ; then
+         case "$1" in
+             *.tar.bz2)   tar xvjf "$1"        ;;
+             *.tar.gz)    tar xvzf "$1"     ;;
+             *.bz2)       bunzip2 "$1"       ;;
+             *.rar)       unrar x "$1"     ;;
+             *.gz)        gunzip "$1"     ;;
+             *.tar)       tar xvf "$1"        ;;
+             *.tbz2)      tar xvjf "$1"      ;;
+             *.tgz)       tar xvzf "$1"       ;;
+             *.jar)       jar xf "$1"       ;;
+             *.zip)       unzip "$1"     ;;
+             *.Z)         uncompress "$1"  ;;
+             *.7z)        7z x "$1"    ;;
              *)           echo "'$1' cannot be extracted via >extract<" ;;
          esac
      else
@@ -265,29 +261,24 @@ function ex() {
 }
 # Compress with tar + bzip2
 function bz2 () {
-  tar cvpjf $1.tar.bz2 $1
-}
-
-# Google the parameter
-function google () {
-  links http://google.com/search?q=$(echo "$@" | sed s/\ /+/g)
+  tar cvpjf "$1.tar.bz2" "$1"
 }
 
 function myip () { 
  # GNU vs BSD hostname
  (hostname -i &> /dev/null)
   if [ $? -eq 0 ]; then
-    echo `hostname -i`
+    hostname -i
   else
     # default to eth0 IP, for MAC
-    echo `ipconfig getifaddr en0`
+    ipconfig getifaddr en0
   fi;
 }
 
 function dumptcp() {
  # TCPDUMP all the data on port $1 into rotated files /tmp/results.  Note,
  # this can get VERY large
-  sudo /usr/sbin/tcpdump -i any -s0 tcp port $1 -A -w /tmp/results -C 100
+  sudo /usr/sbin/tcpdump -i any -s0 tcp port "$1" -A -w /tmp/results -C 100
 }
 
 # anyvi <file>
@@ -295,9 +286,9 @@ function dumptcp() {
 function anyvi()
 {
     if [ -e "$1" ] || [ -f "$1" ]; then
-        $EDITOR $1
+        $EDITOR "$1"
     else
-        $EDITOR `which $1`
+        $EDITOR "$(which "$1")"
     fi
 }
 complete -cf anyvi        #autocomplete the anyvi command
@@ -307,27 +298,27 @@ complete -cf anyvi        #autocomplete the anyvi command
 #   ps awxxx | grep java
 # will show "grep java", which is probably not what you want
 function psgrep(){
-  local OUTFILE=`mktemp /tmp/psgrep.XXXXX`
-  ps awxxx > $OUTFILE
-  grep $@ $OUTFILE
-  rm $OUTFILE
+  OUTFILE=$(mktemp /tmp/psgrep.XXXXX)
+  ps awxxx > "$OUTFILE"
+  grep "$@" "$OUTFILE"
+  rm "$OUTFILE"
 }
 
 # Quick and dirty calculator.  Goes right to ruby and lets you print out
 #   the results of math operations, or other ruby expressions
 function calc(){ ruby -e "puts $*"; }
 
-add_path $HOME/bin
-add_path $HOME/.bash/bin
-add_path $HOME/.bash/group/bin
+add_path "$HOME/bin"
+add_path "$HOME/.bash/bin"
+add_path "$HOME/.bash/group/bin"
 
 # Set up git completion
-source $HOME/.bash/config/git-completion.bash
-source $HOME/.bash/config/git-prompt.sh
+source "$HOME/.bash/config/git-completion.bash"
+source "$HOME/.bash/config/git-prompt.sh"
 
 ###### PROMPT ######
 # Set up the prompt colors
-source $HOME/.bash/term_colors
+source "$HOME/.bash/term_colors"
 PROMPT_COLOR=$G
 if [ ${UID} -eq 0 ]; then
   PROMPT_COLOR=$R ### root is a red color prompt
@@ -354,19 +345,18 @@ function bad_prompt(){
 
 #### Source group
 GROUP_FILE="$HOME/.bash/group/group.bash"
-if [ -f $GROUP_FILE ]
-then
-  source $GROUP_FILE
+if [ -f "$GROUP_FILE" ]; then
+  source "$GROUP_FILE"
 fi;
 ##### Source the correct per-host file
 PERHOST_FILE="$HOME/.bash/group/hostnames/$HOSTNAME_SCRUB.bash"
-if [ -f $PERHOST_FILE ]
-then
-  source $PERHOST_FILE  
+if [ -f "$PERHOST_FILE" ]; then
+  source "$PERHOST_FILE"
 fi;
 
 # remove duplicate path entries and preserve PATH order
-export PATH=$(echo $PATH | awk -F: '
+export PATH
+PATH=$(echo "$PATH" | awk -F: '
 { start=0; for (i = 1; i <= NF; i++) if (!($i in arr) && $i) {if (start!=0) printf ":";start=1; printf "%s", $i;arr[$i]}; }
 END { printf "\n"; } ')
 

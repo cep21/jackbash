@@ -4,7 +4,7 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " How I manage all my plugins
-Plugin 'gmarik/vundle'
+Plugin 'VundleVim/Vundle.vim'
 " Dockerfile syntax support
 Plugin 'ekalinin/Dockerfile.vim'
 " Git support (:Gstatus)
@@ -12,13 +12,13 @@ Plugin 'tpope/vim-fugitive'
 " Gives me the left side highlighting
 Plugin 'scrooloose/syntastic'
 " Gives me ; to explore files
-Plugin 'wincent/Command-T'
+" Plugin 'wincent/Command-T'
 " Manage window sessions with SaveSession
 " Bundle 'xolox/vim-session'
 " Show possible tab completions while editting
 " Bundle 'Valloric/YouCompleteMe'
 " Explore tags (:TlistOpen)
-Plugin 'taglist.vim'
+" Plugin 'taglist.vim'
 " Rustlang syntastic checks
 Plugin 'wting/rust.vim'
 call vundle#end()
