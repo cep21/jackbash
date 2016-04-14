@@ -11,6 +11,14 @@ Plugin 'ekalinin/Dockerfile.vim'
 Plugin 'tpope/vim-fugitive'
 " Gives me the left side highlighting
 Plugin 'scrooloose/syntastic'
+" Go syntax
+Plugin 'fatih/vim-go'
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+
 " Gives me ; to explore files
 " Plugin 'wincent/Command-T'
 " Manage window sessions with SaveSession

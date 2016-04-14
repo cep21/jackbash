@@ -166,9 +166,6 @@ complete -W "$(echo `cat ~/.ssh/known_hosts 2> /dev/null | cut -f 1 -d ' ' | sed
 # For _get_cword from https://code.google.com/p/bash-completion-lib/source/browse/trunk/include/_get_cword?spec=svn85&r=85
 . ~/.bash/config/get_cword.bash
 
-# golang auto completion from http://golang.org/misc/bash/go
-. ~/.bash/config/go-bash-completion.bash
-
 # autocomplete man commands
 function listmans_raw() {
   local manpath_func
