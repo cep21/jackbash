@@ -81,3 +81,7 @@ augroup filetype
   autocmd FileType proto :setlocal sw=2 ts=2 sts=2
   au! Syntax proto source ~/.bash/config/proto.vim
 augroup end
+
+if filereadable(expand("~/.bash/group/.vimrc"))
+  source ~/.bash/group/.vimrc
+endif
