@@ -16,6 +16,8 @@
   amd = !git commit --amend -eF `git config commit.template`
   # Safe remove all branches reachable from HEAD.  Good way to GC old branches after dcommit/rebase
   gcbr = !git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || exit 0
+  # Same as gcbr but also removes remote branches
+  gcbr = !(git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || exit 0) && (git remote prune origin || exit 0)
   # Spellcheck your commit message
   aspell = !git log --pretty=format:%s%n%n%b -n1 > /tmp/aspell.txt && aspell -c /tmp/aspell.txt && git commit --amend -F /tmp/aspell.txt
   # Commit changes to current head as amended commit

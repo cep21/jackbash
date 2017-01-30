@@ -3,6 +3,8 @@ set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+
+Plugin 'hashivim/vim-terraform'
 " How I manage all my plugins
 Plugin 'VundleVim/Vundle.vim'
 " Dockerfile syntax support
@@ -13,6 +15,8 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'scrooloose/syntastic'
 " Go syntax
 Plugin 'fatih/vim-go'
+" omni search in vim
+Plugin 'ctrlpvim/ctrlp.vim'
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
@@ -33,8 +37,10 @@ call vundle#end()
 filetype plugin indent on
 syntax on
 
+set shell=/bin/bash
+
 " Supports Command-T as ;
-map ; :CommandT<CR>
+" map ; :CommandT<CR>
 
 " Source company specific vim settings
 if filereadable(glob("~/.bash/group/vimrc")) 
