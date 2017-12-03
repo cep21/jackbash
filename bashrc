@@ -94,7 +94,7 @@ ex=01;32:\
 *.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:\
 *.ogg=01;35:*.mp3=01;35:*.wav=01;35:\
 ";
-export GREP_OPTIONS='--color=auto'
+#export GREP_OPTIONS='--color=auto'
 export GIT_CEILING_DIRECTORIES
 GIT_CEILING_DIRECTORIES=$(echo $HOME | sed 's#/[^/]*$##')  # Either /home(linux) or /Users(mac)
 export HISTFILESIZE=1000000000
