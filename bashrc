@@ -97,6 +97,7 @@ ex=01;32:\
 #export GREP_OPTIONS='--color=auto'
 export GIT_CEILING_DIRECTORIES
 GIT_CEILING_DIRECTORIES=$(echo $HOME | sed 's#/[^/]*$##')  # Either /home(linux) or /Users(mac)
+export HISTTIMEFORMAT="%y/%m/%d %T "
 export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
