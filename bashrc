@@ -63,7 +63,7 @@
 #fi;
 
 # Create a scrubed hostname
-HOSTNAME_SCRUB=$(hostname | sed -e s/[^a-z0-9_]//g)
+HOSTNAME_SCRUB=$(hostname | sed -e s/[^a-zA-Z0-9_]//g)
 
 
 # Global variables
