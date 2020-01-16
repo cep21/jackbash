@@ -74,10 +74,12 @@ if [ $? -eq 0 ]; then
   export SVN_EDITOR=$VIM_PATH
   export GIT_EDITOR=$VIM_PATH
 fi
+unset VIM_PATH
 LESS_PATH=$(which less)
 if [ $? -eq 0 ]; then
   export PAGER=$LESS_PATH
 fi
+unset LESS_PATH
 export LS_COLORS="no=00:\
 fi=00:\
 di=01;36:\
@@ -345,10 +347,18 @@ export PROMPT_COMMAND='if [ $? -ne 0 ]; then CURSOR_PROMPT=`bad_prompt`; else CU
 KUBE_PATH=$(which kubectl)
 if [ $? -eq 0 ]; then
   source "$HOME/.bash/config/kube-ps1.sh"
+  source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
 else
   KUBE_PS1_ENABLED=off
 fi
+unset KUBE_PATH
 
+# Add autocomplete for google cloud
+GCLOUD_PATH=$(which gcloud)
+if [ $? -eq 0 ]; then
+  source ~/.bash/config/gcloud-bash-completion.bash
+fi
+unset GCLOUD_PATH
 
 function bad_prompt(){
 #  red='\033[0;31m'
