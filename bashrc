@@ -360,6 +360,12 @@ if [ $? -eq 0 ]; then
 fi
 unset GCLOUD_PATH
 
+HELM_PATH=$(which helm)
+if [ $? -eq 0 ]; then
+  source <(helm completion bash)
+fi
+unset HELM_PATH
+
 function bad_prompt(){
 #  red='\033[0;31m'
 #  NC='\033[0m' # No Color
