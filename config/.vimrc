@@ -17,11 +17,16 @@ Plugin 'scrooloose/syntastic'
 Plugin 'fatih/vim-go'
 " omni search in vim
 Plugin 'ctrlpvim/ctrlp.vim'
+" Used for {{ }} go template style formatting
+Plugin 'mustache/vim-mustache-handlebars'
+" For helm
+Plugin 'towolf/vim-helm'
 let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_build_constraints = 1
+let g:terraform_align = 1
 
 " Gives me ; to explore files
 " Plugin 'wincent/Command-T'
@@ -51,6 +56,8 @@ set tags=tags;/
 
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_cpp_checkers = ['gcc']
+let g:syntastic_filetype_map = { "Dockerfile": "dockerfile" }
+let g:syntastic_dockerfile_checkers = ['hadolint']
 let g:syntastic_enable_highlighting=1
 " On by default, turn it off for html
 let g:syntastic_mode_map = { 'mode': 'active',

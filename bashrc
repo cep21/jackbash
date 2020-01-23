@@ -1,6 +1,8 @@
 #!/bin/bash
 # .bashrc
 # === INTRO ===
+
+
 #
 # Welcome to the most awesome bash startup script you'll ever see.
 #   It tries to be BSD and GNU compatable, which means it works on
@@ -68,15 +70,17 @@ HOSTNAME_SCRUB=$(hostname | sed -e s/[^a-zA-Z0-9_]//g)
 
 # Global variables
 # Sometimes EDITOR require a complete path
-VIM_PATH=$(which vim)
+VIM_PATH=$(which vim &> /dev/null)
 if [ $? -eq 0 ]; then
+  VIM_PATH=$(which vim)
   export EDITOR=$VIM_PATH
   export SVN_EDITOR=$VIM_PATH
   export GIT_EDITOR=$VIM_PATH
 fi
 unset VIM_PATH
-LESS_PATH=$(which less)
+LESS_PATH=$(which less &> /dev/null)
 if [ $? -eq 0 ]; then
+  LESS_PATH=$(which less)
   export PAGER=$LESS_PATH
 fi
 unset LESS_PATH
@@ -104,8 +108,8 @@ export HISTFILESIZE=1000000000
 export HISTSIZE=1000000
 export PROMPT_COMMAND='history -a'
 export BROWSER='firefox'
-#export LANG='en_US.utf8'
-export LANG='C' # Testing: Try out the C locale
+export LANG='en_US.UTF-8'
+#export LANG='C' # Testing: Try out the C locale
 if [ -f "$HOME/.inputrc" ]; then
   export INPUTRC="$HOME/.inputrc"
 fi;
@@ -243,6 +247,7 @@ function ex() {
          case "$1" in
              *.tar.bz2)   tar xvjf "$1"        ;;
              *.tar.gz)    tar xvzf "$1"     ;;
+             *.tar.xz)    tar xvf "$1"     ;;
              *.bz2)       bunzip2 "$1"       ;;
              *.rar)       unrar x "$1"     ;;
              *.gz)        gunzip "$1"     ;;
@@ -344,7 +349,7 @@ export PROMPT_COMMAND='if [ $? -ne 0 ]; then CURSOR_PROMPT=`bad_prompt`; else CU
 
 # Attach k8s ns and context to prompt if we have kubectl installed
 # Must do this after setting PROMPT_COMMAND
-KUBE_PATH=$(which kubectl)
+KUBE_PATH=$(which kubectl &> /dev/null)
 if [ $? -eq 0 ]; then
   source "$HOME/.bash/config/kube-ps1.sh"
   source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
@@ -354,13 +359,13 @@ fi
 unset KUBE_PATH
 
 # Add autocomplete for google cloud
-GCLOUD_PATH=$(which gcloud)
+GCLOUD_PATH=$(which gcloud &> /dev/null)
 if [ $? -eq 0 ]; then
   source ~/.bash/config/gcloud-bash-completion.bash
 fi
 unset GCLOUD_PATH
 
-HELM_PATH=$(which helm)
+HELM_PATH=$(which helm &> /dev/null)
 if [ $? -eq 0 ]; then
   source <(helm completion bash)
 fi
@@ -371,6 +376,11 @@ function bad_prompt(){
 #  NC='\033[0m' # No Color
 #  echo -e "${red}>${NC}"
   echo -e ">"
+}
+
+# Get a simple kubectl shell up and running
+function kshell() {
+  kubectl run my-shell --rm -i --tty --image ubuntu -- bash
 }
 
 #### Source group
