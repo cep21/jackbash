@@ -1,10 +1,6 @@
 #!/bin/bash
-
-
 # .bashrc
 # === INTRO ===
-
-
 #
 # Welcome to the most awesome bash startup script you'll ever see.
 #   It tries to be BSD and GNU compatable, which means it works on
