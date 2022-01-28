@@ -162,6 +162,7 @@ alias sush='ssh -l root'
 alias http_headers='curl -svo /dev/null'
 
 # Auto completion
+[ -f /usr/local/etc/bash_completion ] && . /usr/local/etc/bash_completion
 complete -cf sudo
 complete -cf which
 #autocomplete ssh commands with the hostname
