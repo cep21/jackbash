@@ -1,0 +1,47 @@
+#!/bin/bash
+set -eou pipefail
+SCRIPT_NAME=$0
+DIR=${1-}
+COMMIT=${2-}
+if [ "${DEBUG-}" == "true" ]; then
+  set -x
+fi
+
+# https://gist.github.com/iridiumcao/714d3d0a9137ce614c26e4e10d185291
+function is_in_remote() {
+    local -r branch=${1}
+    local -r existed_in_remote=$(git ls-remote --heads origin "${branch}")
+
+    if [[ -z ${existed_in_remote} ]]; then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
+function show_help() {
+  echo "Resets a directory to a commit and ammends head"
+  echo "Usage: $SCRIPT_NAME <dir> <commit>"
+  echo "Example: $SCRIPT_NAME releases origin/master"
+  return 
+}
+
+if [ -z "$DIR" ]; then
+  show_help
+  exit 1
+fi
+
+if [ -z "$COMMIT" ]; then
+  if is_in_remote master ; then
+    COMMIT="origin/master"
+  elif is_in_remote main ; then
+    COMMIT="origin/main"
+  else
+    show_help
+    exit 1
+  fi
+fi
+
+git rm -r "$DIR"
+git checkout $COMMIT -- "$DIR"
+git commit --amend -a -C HEAD

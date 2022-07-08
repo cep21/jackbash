@@ -382,7 +382,6 @@ function bad_prompt(){
 function kshell() {
   kubectl run my-shell --rm -i --tty --image ubuntu -- bash
 }
-
 #### Source group
 GROUP_FILE="$HOME/.bash/group/group.bash"
 if [ -f "$GROUP_FILE" ]; then
