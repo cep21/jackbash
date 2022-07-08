@@ -1,6 +1,8 @@
 #!/bin/bash
 # Delete branches that have ': gone]' in the title
 set -eou pipefail
+git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || exit 0
+git remote prune origin || exit 0
 git fetch -p
 git remote prune origin
 git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -D
