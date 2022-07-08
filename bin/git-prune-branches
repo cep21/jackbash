@@ -5,4 +5,4 @@ git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git bran
 git remote prune origin || true
 git fetch -p
 git remote prune origin
-git branch -vv | grep ': gone]' | awk '{print $1}' | xargs -r git branch -D
+git branch -vv | grep ': gone]' | grep -v '^\*' | awk '{print $1}' | xargs -r git branch -D
