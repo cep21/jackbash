@@ -1,8 +1,10 @@
 #!/bin/bash
-# Delete branches that have ': gone]' in the title
+# Prune branches that are probably safe to delete
+# These are usually merged remotes if using github
+# 1. Delete branches that have ': gone]' in the title
+# 2. Run `prune origin`
 set -eou pipefail
-git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || true
-git remote prune origin || true
-git fetch -p
+git fetch -avp
+git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d || true
 git remote prune origin
 git branch -vv | grep ': gone]' | grep -v '^\*' | awk '{print $1}' | xargs -r git branch -D
