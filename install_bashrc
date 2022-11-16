@@ -7,7 +7,7 @@ if [ -d $INSTALL_DIR ]; then
   exit
 fi;
 
-git clone git://github.com/cep21/jackbash.git $INSTALL_DIR
+git clone https://github.com/cep21/jackbash.git $INSTALL_DIR
 
 for x in $HOME/.bashrc $HOME/.profile $HOME/.bash_profile ; do
   if [ -e $x ]; then
