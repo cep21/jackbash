@@ -4,7 +4,17 @@
 # 1. Delete branches that have ': gone]' in the title
 # 2. Run `prune origin`
 set -eou pipefail
+
+# First, do the safe '-d' delete
+git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d &> /dev/null || true
+
+# Try pruning already removed remote branches
+git remote prune origin || true
 git fetch -avp
-git branch --no-track --no-color --merged | sed 's/[ *]*//' | xargs -n1 git branch -d || true
-git remote prune origin
-git branch -vv | grep ': gone]' | grep -v '^\*' | awk '{print $1}' | xargs -r git branch -D
+git remote prune origin || true
+
+# Mostly stolen from https://stackoverflow.com/questions/7726949/remove-tracking-branches-no-longer-on-remote
+for branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads | awk '$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'); do
+  git branch -D "$branch"
+done
+git gc --aggressive

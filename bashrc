@@ -379,6 +379,7 @@ function bad_prompt(){
   echo -e ">"
 }
 
+
 # Get a simple kubectl shell up and running
 function kshell() {
   kubectl run my-shell --rm -i --tty --image ubuntu -- bash
