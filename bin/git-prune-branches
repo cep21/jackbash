@@ -27,6 +27,9 @@ if which gh &> /dev/null ; then
     git checkout "$DEFAULT_BRANCH"
     for branch in $(git for-each-ref --format='%(refname)' refs/heads/); do
       branch="${branch#refs/heads/}"
+      if [[ "$branch" == "main" || "$branch" == "master" ]]; then
+        continue
+      fi
       CURRENT_STATE=$(gh pr view "$branch" --json state -q .state)
       if [[ "$CURRENT_STATE" == "MERGED" ]]; then
         git branch -D "$branch"	      
