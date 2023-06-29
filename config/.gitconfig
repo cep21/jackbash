@@ -19,7 +19,7 @@
   # Commit changes to current head as amended commit
   plus = commit --amend -a -C HEAD
   # Commit changes on *top* of current head as a checkpoint commit
-  cp = commit -am 'cp'
+  cp = commit -am 'nit: checkpoint commit'
   # Grep with color and line numbers
   gr = grep --color -n
   # Colorized git blame
