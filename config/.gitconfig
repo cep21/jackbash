@@ -1,3 +1,8 @@
+[include]
+  # Includes need git 1.7.10 to work. Replace this with
+  # a [user] section if you don't have a up-to-date version
+  path = ~/.gitidentity
+
 [color]
   diff = auto
   status = auto
@@ -29,11 +34,6 @@
 
 [svn]
   followparent = true
-
-# Dear god, please change these if you borrow my gitconfig
-[user]
-#  name  = Replace with your name
-#  email = Replace with your email
 
 # Show a log of '56 minutes ago' rather than 'November 12, 2008 12:34:53'
 [log]
