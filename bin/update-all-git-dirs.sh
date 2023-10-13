@@ -33,6 +33,7 @@ function update_dir() {
   if [[ "$(branch_name)" == "main" ]]; then
     git rebase origin/main
   fi
+  git-prune-branches
 }
 
 for d in */ ; do
