@@ -25,7 +25,7 @@ function update_dir() {
     echo "$d is not a git directory: skipping"
     exit 0
   fi
-  git fetch -av
+  git fetch -avp
   if ! is_clean ; then
     echo "$d is not clean: skipping"
     exit 0
