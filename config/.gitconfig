@@ -58,3 +58,8 @@
   added = yellow
   changed = green
   untracked = cyan
+
+# Use the .gitignore file to have a global git ignore for things like the ./.idea
+# directory
+[core]
+  excludesfile = ~/.gitignore
