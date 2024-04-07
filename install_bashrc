@@ -30,3 +30,12 @@ if [ -e $HOME/.inputrc ]; then
   mv $HOME/.inputrc $HOME/.inputrc_backup
 fi;
 ln -s $INSTALL_DIR/config/.inputrc $HOME/.inputrc
+
+if [ ! -e $HOME/.gitidentity ]; then
+  echo "Setting up your git identity in ~/.gitidentity:"
+  echo -n "Email: "
+  read email
+  echo -n "Name: "
+  read name
+  echo -e "[user]\n\tname = $name\n\temail = $email" > $HOME/.gitidentity
+fi
