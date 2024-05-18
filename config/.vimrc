@@ -4,6 +4,10 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
+set nocompatible
+set ruler
+
+
 Plugin 'hashivim/vim-terraform'
 " How I manage all my plugins
 Plugin 'VundleVim/Vundle.vim'
