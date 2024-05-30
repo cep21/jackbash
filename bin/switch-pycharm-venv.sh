@@ -13,3 +13,4 @@ fi
 rm -f "${DESTINATION}"
 ln -s $(pwd)/venv "${DESTINATION}"
 echo "File ${DESTINATION} is now pointing to $(readlink -f "$DESTINATION")"
+echo "Run this: source ./venv/bin/activate"
