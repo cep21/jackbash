@@ -1,0 +1,11 @@
+#!/bin/bash
+set -exuo pipefail
+if [[ -d venv ]]; then
+	rm -rf venv
+fi
+deactivate || true
+python -m venv venv
+echo "source ./venv/bin/activate"
+if [[ -f requirements.txt ]]; then
+	pip install -r requirements.txt
+fi
