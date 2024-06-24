@@ -1,6 +1,6 @@
 #!/bin/bash
 # Run with kubectl get autoscalingrunnersets.actions.github.com -A -o=jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.namespace}{"\n"}{end}'
-set -euo pipefail
+set -exuo pipefail
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <crd-type> <namespace>"
   exit 1
@@ -19,7 +19,7 @@ eval "${QUERY[@]}"
 
 export DR="--dry-run=server"
 if [[ "${DRY_RUN-}" == "false" ]]; then
-export DR=""
+  export DR=""
 fi
 
 while IFS=':' read -r OBJ NS ; do
@@ -27,6 +27,5 @@ while IFS=':' read -r OBJ NS ; do
   NS="${NS#\'}"
   OBJ="${OBJ#\'}"
   echo "$OBJ $NS"
-  export DRY_RUN="--dry-run"
   kubectl patch "$1" "$OBJ" --namespace "$NS" --type json --patch='[ { "op": "remove", "path": "/metadata/finalizers" } ]' "$DR"
 done < <("${QUERY[@]}")
