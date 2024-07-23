@@ -366,6 +366,7 @@ if [ $? -eq 0 ]; then
 fi
 unset GCLOUD_PATH
 
+
 HELM_PATH=$(which helm &> /dev/null)
 if [ $? -eq 0 ]; then
   source <(helm completion bash)

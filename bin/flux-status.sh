@@ -4,8 +4,11 @@ CTX=$(kubectl config current-context)
 KUST_STATUS=$(mktemp)
 HR_STATUS=$(mktemp)
 HELM_STATUS=$(mktemp)
+SOURCE_STATUS=$(mktemp)
 echo "Fetching kustomizations"
 kubectl --context $CTX get kustomizations.kustomize.toolkit.fluxcd.io -A >  "$KUST_STATUS"
+echo "Fetching Sources"
+kubectl --context $CTX get gitrepositories.source.toolkit.fluxcd.io -A >  "$SOURCE_STATUS"
 echo "Fetching helm releases"
 kubectl --context $CTX get helmreleases.helm.toolkit.fluxcd.io -A > "$HR_STATUS"
 echo "listing helm charts"
@@ -16,6 +19,8 @@ TOTAL_HR=$(wc -l < "$HR_STATUS")
 TOTAL_HR_FALSE=$(grep 'False' < "$HR_STATUS" | wc -l)
 TOTAL_H=$(wc -l < "$HELM_STATUS")
 TOTAL_H_FALSE=$(grep 'False' < "$HELM_STATUS" | wc -l)
+TOTAL_SOURCE=$(wc -l < "$SOURCE_STATUS")
+TOTAL_SOURCE_FALSE=$(grep 'False' < "$SOURCE_STATUS" | wc -l)
 echo "Total kustomizations: $TOTAL_KUST"
 echo "Total HelmRelease: $TOTAL_HR"
 echo "Total Helm Charts: $TOTAL_H"
@@ -25,5 +30,7 @@ echo "Bad HelmRelease"
 cat < $HR_STATUS | grep -v 'True'
 echo "Bad Helm Charts"
 cat < $HELM_STATUS | grep -v 'deployed'
+echo "Bad Sources"
+cat < $SOURCE_STATUS | grep -v 'True'
 
-rm -f "$KUST_STATUS" "$HR_STATUS" "$HELM_STATUS"
+rm -f "$KUST_STATUS" "$HR_STATUS" "$HELM_STATUS" "$SOURCE_STATUS"
