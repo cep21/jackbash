@@ -17,7 +17,11 @@ git remote prune origin || true
 for branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads | awk '$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'); do
   git branch -D "$branch"
 done
-git gc
+
+# Skip garbage collection if SKIP_GC=1
+if [[ "${SKIP_GC:-0}" != "1" ]]; then
+  git gc
+fi
 
 # If we have the GH cli and the origin is github, prune those branches too
 if which gh &> /dev/null ; then
